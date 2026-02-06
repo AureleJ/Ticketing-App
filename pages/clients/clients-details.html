@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioStore SAS | Ticketing</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="../dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="../projects/projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="../tickets/tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html" class="active"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+
+            <div class="content-scroll">
+                
+                <div class="top-bar glass-panel animate-item">
+                    <a href="clients.html" class="btn btn-secondary no-border pl-0">
+                        <i class="ph-bold ph-arrow-left"></i> Retour aux clients
+                    </a>
+                    <div class="flex gap-sm">
+                        <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> Editer</button>
+                        <button class="btn btn-primary"><i class="ph ph-plus"></i> Nouveau Projet</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel pannel animate-item delay-1">
+                    <div class="flex-between flex-start flex-wrap gap-lg">
+
+                        <div class="flex-center-y gap-lg">
+                            <div class="user-avatar large yellow">B</div>
+                            <div>
+                                <h1 class="text-title text-xl mb-xs">BioStore SAS</h1>
+                                <div class="text-muted mb-sm">biostore.fr • Client depuis 2023</div>
+                                <div class="flex gap-sm">
+                                    <span class="badge badge-active">Contrat Actif</span>
+                                    <span class="badge badge-outline">Retail / E-commerce</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-xl text-right">
+                            <div>
+                                <div class="text-muted text-sm mb-xs">Tickets ouverts</div>
+                                <div class="text-title text-xl">3</div>
+                            </div>
+                            <div>
+                                <div class="text-muted text-sm mb-xs">Projets actifs</div>
+                                <div class="text-title text-xl">2</div>
+                            </div>
+                            <div>
+                                <div class="text-muted text-sm mb-xs">Solde Heures</div>
+                                <div class="text-warning font-bold text-xl">8h</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="tabs-nav mt-md mb-0 no-border p-0">
+                        <div class="tab-link active">Vue d'ensemble</div>
+                        <div class="tab-link">Projets (2)</div>
+                        <div class="tab-link">Tickets (15)</div>
+                        <div class="tab-link">Factures</div>
+                        <div class="tab-link">Paramètres</div>
+                    </div>
+                </div>
+
+                <div class="ticket-layout animate-item delay-2">
+
+                    <div class="flex-col gap-lg">
+
+                        <div>
+                            <div class="flex-between mb-md">
+                                <h3 class="text-lg font-bold">Projets en cours</h3>
+                                <button class="btn-icon btn-discret"><i class="ph-bold ph-plus"></i></button>
+                            </div>
+
+                            <div class="projects-grid-2col">
+                                <div class="glass-panel project-card" onclick="window.location='../projects/projects.html'">
+                                    <div class="flex-between flex-start">
+                                        <div>
+                                            <h3 class="font-bold mb-xs">Maintenance 2026</h3>
+                                            <div class="text-muted text-sm">TMA Magento</div>
+                                        </div>
+                                        <div class="user-avatar outline small"><i class="ph-fill ph-wrench"></i></div>
+                                    </div>
+                                    <div class="mt-md">
+                                        <div class="flex-between text-muted text-xs mb-xs">
+                                            <span>Conso.</span>
+                                            <span class="text-warning">42h / 50h</span>
+                                        </div>
+                                        <div class="progress-track">
+                                            <div class="progress-fill" style="width: 84%; background: var(--warning-color);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel project-card" onclick="window.location='../projects/projects.html'">
+                                    <div class="flex-between flex-start">
+                                        <div>
+                                            <h3 class="font-bold mb-xs">Refonte Mobile</h3>
+                                            <div class="text-muted text-sm">App iOS/Android</div>
+                                        </div>
+                                        <div class="user-avatar outline small"><i class="ph-fill ph-device-mobile"></i></div>
+                                    </div>
+                                    <div class="mt-md">
+                                        <div class="flex-between text-muted text-xs mb-xs">
+                                            <span>Avancement</span>
+                                            <span class="text-success">15%</span>
+                                        </div>
+                                        <div class="progress-track">
+                                            <div class="progress-fill" style="width: 15%; background: var(--success-color);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex-between mb-md">
+                                <h3 class="text-lg font-bold">Derniers Tickets</h3>
+                                <a href="../tickets/tickets.html" class="text-muted text-sm">Voir tout</a>
+                            </div>
+
+                            <div class="glass-panel p-0">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Sujet</th>
+                                            <th>Statut</th>
+                                            <th>Date</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr onclick="window.location='../tickets/ticket-details.html'">
+                                            <td class="font-mono text-muted">#1024</td>
+                                            <td>Bug Menu Mobile</td>
+                                            <td><span class="badge badge-urgent">Urgent</span></td>
+                                            <td class="text-muted">Aujourd'hui</td>
+                                            <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
+                                        </tr>
+
+                                        <tr onclick="window.location='../tickets/ticket-details.html'">
+                                            <td class="font-mono text-muted">#1019</td>
+                                            <td>Configuration SSL</td>
+                                            <td><span class="badge badge-outline">Terminé</span></td>
+                                            <td class="text-muted">01/02</td>
+                                            <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
+                                        </tr>
+
+                                        <tr onclick="window.location='../tickets/ticket-details.html'">
+                                            <td class="font-mono text-muted">#1002</td>
+                                            <td>Export CSV Manquant</td>
+                                            <td><span class="badge badge-outline">Terminé</span></td>
+                                            <td class="text-muted">20/01</td>
+                                            <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="flex-col gap-lg">
+
+                        <div class="glass-panel pannel">
+                            <div class="flex-between mb-md">
+                                <h3 class="text-sm font-bold text-muted uppercase">Contacts</h3>
+                                <button class="btn-icon btn-discret"><i class="ph-bold ph-plus"></i></button>
+                            </div>
+
+                            <div class="flex-col gap-md">
+                                <div class="flex-center-y gap-sm">
+                                    <div class="user-avatar outline">PM</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm">Paul Martin</div>
+                                        <div class="text-muted text-xs">CEO • Décideur</div>
+                                    </div>
+                                    <div class="flex gap-xs">
+                                        <button class="btn-icon btn-discret"><i class="ph-fill ph-envelope-simple"></i></button>
+                                        <button class="btn-icon btn-discret"><i class="ph-fill ph-phone"></i></button>
+                                    </div>
+                                </div>
+                                <div class="flex-center-y gap-sm">
+                                    <div class="user-avatar outline">JL</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm">Julie Lavigne</div>
+                                        <div class="text-muted text-xs">Resp. Marketing</div>
+                                    </div>
+                                    <div class="flex gap-xs">
+                                        <button class="btn-icon btn-discret"><i class="ph-fill ph-envelope-simple"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold text-muted mb-md uppercase">Notes Internes</h3>
+                            <div class="input-group">
+                                <textarea class="note-textarea w-full"
+                                    placeholder="Notes sur le client (facturation, préférences, alertes)...">Client exigeant sur les délais mais paie rapidement. Préfère les réunions le mardi matin.</textarea>
+                            </div>
+                            <button class="btn btn-secondary w-full mt-sm text-sm">Sauvegarder</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+
+</html>

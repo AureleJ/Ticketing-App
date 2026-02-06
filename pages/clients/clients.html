@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients | Ticketing</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="popup-overlay hidden" id="newClientPopup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-bold">Ajouter un Client</h3>
+                    <button class="btn-icon" onclick="togglePopup('newClientPopup')"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <div class="popup-body">
+                    <div class="input-group mb-md"><i class="ph ph-buildings"></i><input type="text" placeholder="Nom entreprise"></div>
+                    <div class="input-group mb-md"><i class="ph ph-user"></i><input type="text" placeholder="Contact"></div>
+                    <div class="input-group mb-md"><i class="ph ph-envelope-simple"></i><input type="email" placeholder="Email"></div>
+                    <div class="input-group textarea-group"><i class="ph ph-info"></i><textarea placeholder="Notes..."></textarea></div>
+                </div>
+                <div class="popup-footer">
+                    <button class="btn btn-secondary" onclick="togglePopup('newClientPopup')">Annuler</button>
+                    <button class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="../dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="../projects/projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="../tickets/tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html" class="active"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <button class="btn btn-primary btn-floating" onclick="togglePopup('newClientPopup')"><i class="ph-bold ph-plus"></i> Nouveau</button>
+
+            <div class="content-scroll">
+                <div class="top-bar glass-panel animate-item">
+                    <div class="flex-center-y gap-md">
+                        <h2>Mes Clients</h2>
+                    </div>
+                </div>
+
+                <div class="filters-bar animate-item delay-1">
+                    <div class="input-group search-wrapper flex-1">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Rechercher...">
+                    </div>
+                </div>
+
+                <div class="clients-grid animate-item delay-2">
+                    <div class="glass-panel client-card">
+                        <div class="client-header">
+                            <div class="user-avatar large yellow">B</div>
+                            <div>
+                                <h3 class="text-lg font-bold">BioStore SAS</h3>
+                                <div class="text-muted text-sm">biostore.fr</div>
+                            </div>
+                            <div class="ml-auto"><span class="badge badge-active">Actif</span></div>
+                        </div>
+                        <div class="client-body">
+                            <div class="contact-row"><i class="ph-bold ph-user"></i> <span>Paul Martin (CEO)</span></div>
+                            <div class="contact-row"><i class="ph-bold ph-envelope-simple"></i> <span>contact@biostore.fr</span></div>
+                        </div>
+                        <div class="client-footer">
+                            <div class="client-stat"><span>2</span> Projets</div>
+                            <div class="client-stat"><span>15</span> Tickets</div>
+                            <div class="client-stat"><span class="text-warning">8h</span> Restantes</div>
+                            <a class="btn-icon" href="../clients/clients-details.html"><i class="ph-bold ph-caret-right"></i></a>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

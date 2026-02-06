@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refonte Mobile | Projets</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="app-container">
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="../dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="projects.html" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="../tickets/tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="../clients/clients.html"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-scroll">
+                
+                <div class="top-bar glass-panel animate-item">
+                    <a href="../projects/projects.html" class="btn btn-secondary no-border pl-0">
+                        <i class="ph-bold ph-arrow-left"></i> Retour aux projets
+                    </a>
+                    <div class="flex gap-sm">
+                        <button class="btn btn-secondary"><i class="ph ph-gear"></i> Configurer</button>
+                        <button class="btn btn-primary"><i class="ph ph-plus"></i> Ajouter une tâche</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel pannel animate-item delay-1">
+                    <div class="flex-between flex-start flex-wrap gap-lg">
+                        <div>
+                            <div class="flex-center-y gap-sm mb-xs">
+                                <span class="badge badge-active">En cours</span>
+                                <span class="text-muted text-sm">Démarré le 15 Janvier</span>
+                            </div>
+                            <h1 class="text-title text-2xl mb-xs">Refonte Application Mobile</h1>
+                            <div class="flex-center-y gap-sm text-muted">
+                                <i class="ph-fill ph-buildings"></i> BioStore SAS
+                                <span>•</span>
+                                <i class="ph-fill ph-tag"></i> Développement Mobile
+                            </div>
+                        </div>
+
+                        <div style="width: 300px; max-width: 100%;">
+                            <div class="flex-between mb-sm">
+                                <span class="font-bold text-lg">45%</span>
+                                <span class="text-muted text-sm">Avancement Global</span>
+                            </div>
+                            <div class="progress-track mb-xs">
+                                <div class="progress-fill" style="width: 45%; background: var(--accent-color);"></div>
+                            </div>
+                            <div class="text-right text-xs text-muted">Deadline: 30 Mars 2026</div>
+                        </div>
+                    </div>
+
+                    <div class="tabs-nav mt-md mb-0 no-border p-0">
+                        <div class="tab-link active">Tableau de bord</div>
+                        <div class="tab-link">Tâches (12)</div>
+                        <div class="tab-link">Planning</div>
+                        <div class="tab-link">Fichiers</div>
+                    </div>
+                </div>
+
+                <div class="ticket-layout animate-item delay-2">
+
+                    <div class="flex-col gap-lg">
+                        
+                        <div class="glass-panel pannel">
+                            <h3 class="text-lg font-bold mb-md">À propos du projet</h3>
+                            <p class="text-muted mb-md" style="line-height: 1.6;">
+                                Refonte complète de l'application native iOS et Android pour les clients B2B. 
+                                L'objectif est d'intégrer le nouveau catalogue produit, la prise de commande rapide 
+                                et le suivi de livraison en temps réel.
+                            </p>
+                            <div class="flex gap-md flex-wrap">
+                                <div class="badge badge-outline"><i class="ph-bold ph-check mr-xs"></i> Authentification Biométrique</div>
+                                <div class="badge badge-outline"><i class="ph-bold ph-check mr-xs"></i> Mode Hors-ligne</div>
+                                <div class="badge badge-outline"><i class="ph-bold ph-check mr-xs"></i> Push Notifications</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold mb-md">Jalons & Phases</h3>
+                            <div class="glass-panel p-0">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Phase</th>
+                                            <th>État</th>
+                                            <th>Échéance</th>
+                                            <th>Responsable</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-bold">1. Design & Maquettes</td>
+                                            <td><span class="badge badge-active">Terminé</span></td>
+                                            <td class="text-muted">10 Fév.</td>
+                                            <td><div class="user-avatar small outline">JL</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold">2. Dév. Front-end</td>
+                                            <td><span class="badge badge-waiting">En cours</span></td>
+                                            <td class="text-muted">05 Mars</td>
+                                            <td><div class="user-avatar small outline">AJ</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold text-muted">3. Intégration API</td>
+                                            <td><span class="badge badge-outline">À faire</span></td>
+                                            <td class="text-muted">20 Mars</td>
+                                            <td><div class="user-avatar small outline">PM</div></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-bold text-muted">4. Tests & QA</td>
+                                            <td><span class="badge badge-outline">À faire</span></td>
+                                            <td class="text-muted">30 Mars</td>
+                                            <td><div class="user-avatar small outline">-</div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="flex-col gap-lg">
+
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Consommation Budget</h3>
+                            
+                            <div class="text-center mb-md">
+                                <div class="text-2xl font-bold text-warning">42h</div>
+                                <span class="text-muted text-sm">sur 150h vendues</span>
+                            </div>
+
+                            <div class="progress-track mb-xs">
+                                <div class="flex h-full border-radius-sm overflow-hidden">
+                                    <div style="width: 20%; background: var(--info-color);"></div>
+                                    <div style="width: 15%; background: var(--warning-color);"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-between text-xs mt-sm">
+                                <div class="flex-center-y gap-xs"><div style="width:8px; height:8px; background:var(--info-color); border-radius:50%;"></div> Design</div>
+                                <div class="flex-center-y gap-xs"><div style="width:8px; height:8px; background:var(--warning-color); border-radius:50%;"></div> Développement</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel pannel">
+                            <div class="flex-between mb-md">
+                                <h3 class="text-sm font-bold text-muted uppercase">Équipe Projet</h3>
+                                <button class="btn-icon btn-discret"><i class="ph-bold ph-plus"></i></button>
+                            </div>
+                            <div class="flex-col gap-md">
+                                <div class="flex-center-y gap-sm">
+                                    <div class="user-avatar outline">AJ</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm">Aurele J.</div>
+                                        <div class="text-muted text-xs">Lead Dev</div>
+                                    </div>
+                                </div>
+                                <div class="flex-center-y gap-sm">
+                                    <div class="user-avatar outline">JL</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm">Julie L.</div>
+                                        <div class="text-muted text-xs">UI/UX Designer</div>
+                                    </div>
+                                </div>
+                                <div class="flex-center-y gap-sm">
+                                    <div class="user-avatar outline">PM</div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-sm">Paul M.</div>
+                                        <div class="text-muted text-xs">Client / Product Owner</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Ressources</h3>
+                            <div class="flex-col gap-sm">
+                                <a href="#" class="flex-center-y gap-sm p-sm glass-panel no-border" style="background: rgba(255,255,255,0.05);">
+                                    <i class="ph-fill ph-figma-logo text-lg"></i>
+                                    <div class="text-sm">Maquettes UI.fig</div>
+                                </a>
+                                <a href="#" class="flex-center-y gap-sm p-sm glass-panel no-border" style="background: rgba(255,255,255,0.05);">
+                                    <i class="ph-fill ph-file-pdf text-lg text-danger"></i>
+                                    <div class="text-sm">Cahier des charges.pdf</div>
+                                </a>
+                                <a href="#" class="flex-center-y gap-sm p-sm glass-panel no-border" style="background: rgba(255,255,255,0.05);">
+                                    <i class="ph-fill ph-link text-lg text-info"></i>
+                                    <div class="text-sm">Serveur de Recette</div>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>
