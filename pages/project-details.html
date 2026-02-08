@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refonte Mobile | Projets</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <div id="validation-panel" class="glass-panel pannel animate-item delay-2 hidden">
+            <h3 class="text-sm font-bold text-muted uppercase mb-md">Validation Client</h3>
+            <p class="text-xs text-muted mb-md">Ce ticket est marqué comme <b>Facturable</b> et nécessite une
+                approbation.</p>
+            <div class="flex-col gap-sm">
+                <button class="btn btn-primary w-full" onclick="showToast('Ticket validé !')">Valider la
+                    facturation</button>
+                <button class="btn btn-secondary w-full" onclick="togglePopup('refusal-popup')">Refuser</button>
+            </div>
+        </div>
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="projects.html" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-scroll">
+                <div class="flex-between flex-between top-bar glass-panel animate-item">
+                    <a href="projects.html" class="btn btn-secondary no-border">
+                        <i class="ph-bold ph-arrow-left"></i> Retour aux projets
+                    </a>
+
+                    <div class="flex gap-sm">
+                        <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> Modifier</button>
+                        <button id="main-timer-btn" class="btn btn-timer">
+                            <i class="ph-fill ph-play"></i> Timer: <span id="timer-display">00:00:00</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel pannel flex-col gap-sm animate-item delay-1">
+                    <div class="flex-center-y gap-sm mb-xs">
+                        <span class="badge badge-active">En cours</span>
+                        <span class="text-muted text-sm">Contrat : 150h</span>
+                    </div>
+
+                    <h1 class="text-title text-2xl">Création d'une application mobile</h1>
+
+                    <div class="flex-center-y gap-sm text-muted mb-md">
+                        BioStore SAS
+                    </div>
+                </div>
+
+                <div class="flex gap-lg animate-item delay-2">
+
+                    <div class="glass-panel pannel flex-col gap-sm animate-item delay-1 flex-1">
+                        <h3 class="text-lg font-bold">À propos du projet</h3>
+                        <p class="text-muted" style="line-height: 1.6;">
+                            Refonte complète de l'application native iOS et Android pour les clients B2B.
+                            L'objectif est d'intégrer le nouveau catalogue produit et le suivi de livraison.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel pannel flex-col justify-between">
+                        <h3 class="text-sm font-bold text-muted uppercase mb-md">Équipe Projet</h3>
+                        <div class="flex gap-md flex-wrap">
+                            <div class="flex-center-y gap-sm">
+                                <div class="user-avatar outline">AJ</div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Aurele J.</div>
+                                    <div class="text-muted text-xs">Role</div>
+                                </div>
+                            </div>
+
+                            <div class="flex-center-y gap-sm">
+                                <div class="user-avatar outline">AJ</div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Aurele J.</div>
+                                    <div class="text-muted text-xs">Role</div>
+                                </div>
+                            </div>
+
+                            <div class="flex-center-y gap-sm">
+                                <div class="user-avatar outline">AJ</div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-sm">Aurele J.</div>
+                                    <div class="text-muted text-xs">Role</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-col gap-lg animate-item delay-2">
+
+                    <div class="flex-row gap-lg">
+                        <div class="glass-panel pannel flex-col item-between w-full">
+                            <span class="text-muted text-sm font-bold uppercase">Avancement</span>
+                            <div>
+                                <div class="flex-between mb-xs">
+                                    <span class="text-2xl font-bold">45%</span>
+                                    <span class="text-xs text-muted">Jalon 2/4</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" style="width: 45%; background: var(--accent-color);">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel pannel flex-col item-between w-full">
+                            <span class="text-muted text-sm font-bold uppercase">Budget Heures</span>
+                            <div>
+                                <div class="flex-between mb-xs">
+                                    <span class="text-2xl font-bold text-warning">42h</span>
+                                    <span class="text-xs text-muted">sur 150h</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" style="width: 28%; background: var(--warning-color);">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel pannel flex-col item-between w-full">
+                            <span class="text-muted text-sm font-bold uppercase">Tickets</span>
+                            <div class="flex-between gap-lg mb-xs">
+                                <div class="flex-col flex-center">
+                                    <div class="text-xl font-bold">4</div>
+                                    <div class="text-xs text-muted">Traités</div>
+                                </div>
+                                <div class="flex-col flex-center">
+                                    <div class="text-xl font-bold text-success">1</div>
+                                    <div class="text-xs text-muted">En cours</div>
+                                </div>
+                                <div class="flex-col flex-center">
+                                    <div class="text-xl font-bold text-warning">3</div>
+                                    <div class="text-xs text-muted">Non traités</div>
+                                </div>
+                                <div class="flex-col flex-center">
+                                    <div class="text-xl font-bold text-danger">4</div>
+                                    <div class="text-xs text-muted">Urgents</div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-track">
+                                <div class="progress-fill"
+                                    style="width: calc(4 / 12 * 100%); background: var(--text-primary);"></div>
+                                <div class="progress-fill"
+                                    style="width: calc(1 / 12 * 100%); background: var(--success-color);"></div>
+                                <div class="progress-fill"
+                                    style="width: calc(3 / 12 * 100%); background: var(--warning-color);"></div>
+                                <div class="progress-fill"
+                                    style="width: calc(4 / 12 * 100%); background: var(--danger-color);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="pannel glass-panel animate-item delay-2">
+                        <h3 class="text-lg font-bold mb-md">Tickets liés au projet</h3>
+                        <div class="table-container">
+                            <table class="table" id="ticket-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Sujet</th>
+                                        <th>Client</th>
+                                        <th>Assigné à</th>
+                                        <th>Créé</th>
+                                        <th>Statut</th>
+                                        <th>Type</th>
+                                        <th>Priorité</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-wrapper">
+                            <div class="text-muted text-sm">4 sur 12</div>
+                            <div class="pagination">
+                                <div class="page-btn"><i class="ph-bold ph-caret-left"></i></div>
+                                <div class="page-btn active">1</div>
+                                <div class="page-btn">2</div>
+                                <div class="page-btn"><i class="ph-bold ph-caret-right"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>

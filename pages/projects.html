@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projets | Ticketing</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <div class="popup-overlay hidden" id="project-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Nouveau projet</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('project-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <form id="project-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder"></i>
+                            <input type="text" id="nom-projet" name="nom_projet" placeholder="Nom du projet" required autofocus>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-building"></i>
+                            <input type="text" id="client" name="client" placeholder="Client / Entreprise" required>
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="togglePopup('project-popup')">Annuler</button>
+
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="glass-panel toast succes text-sm hidden" id="toast">
+        </div>
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="projects.html" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-scroll">
+                <div class="top-bar glass-panel animate-item">
+                    <h2>Mes Projets</h2>
+                </div>
+
+                <div class="tabs-nav animate-item delay-1">
+                    <div class="tab-link active">Tous les projets</div>
+                    <div class="tab-link">Mes projets <span class="text-muted text-sm">(4)</span></div>
+                    <div class="tab-link">Archivés</div>
+                </div>
+
+                <div class="filters-bar animate-item delay-2">
+                    <div class="input-group search-wrapper flex-1">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Rechercher...">
+                    </div>
+                    <div class="flex gap-sm">
+                        <div class="input-group" style="width: 160px;">
+                            <i class="ph ph-funnel"></i>
+                            <select>
+                                <option>Statut: Tout</option>
+                                <option>En cours</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="width: 160px;">
+                            <i class="ph ph-sort-ascending"></i>
+                            <select>
+                                <option>Récent</option>
+                                <option>Priorité</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="projects-grid animate-item delay-3" id="projects-grid">
+                </div>
+            </div>
+            <button class="btn btn-primary btn-floating" onclick="togglePopup('project-popup')"><i
+                    class="ph-bold ph-plus"></i> Nouveau</button>
+        </main>
+    </div>
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>
