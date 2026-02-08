@@ -22,7 +22,6 @@
 
                 <form id="ticket-form">
                     <div class="popup-body">
-
                         <div class="input-group mb-md">
                             <i class="ph ph-text-t"></i>
                             <input type="text" id="subject" name="subject" placeholder="Sujet du ticket" required
@@ -48,15 +47,6 @@
                         </div>
 
                         <div class="input-group mb-md">
-                            <i class="ph ph-folder-notch"></i>
-                            <select id="project-id" name="project_id" required>
-                                <option value="" disabled selected>Projet</option>
-                                <option value="1585">Bio Store - Création d'un app</option>
-                                <option value="2225">Tech Consult - Maintenance du site web</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group mb-md">
                             <i class="ph ph-warning-circle"></i>
                             <select id="priority" name="priority" required>
                                 <option value="" disabled selected>Priorité</option>
@@ -70,7 +60,7 @@
                             <i class="ph ph-warning-circle"></i>
                             <select id="type" name="type" required>
                                 <option value="" disabled selected>Type</option>
-                                <option value="factureable">Facturé</option>
+                                <option value="facturable">Facturable</option>
                                 <option value="inclus">Inclus</option>
                             </select>
                         </div>
@@ -83,12 +73,21 @@
                     </div>
 
                     <div class="popup-footer">
-                        <button type="button" class="btn btn-secondary" onclick="togglePopup('ticket-popup')">Annuler</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="togglePopup('ticket-popup')">Annuler</button>
                         <button type="submit" class="btn btn-primary">Créer</button>
                     </div>
                 </form>
             </div>
         </div>
+
+        <header class="mobile-header">
+            <div class="text-logo">
+                <a href="index.html">Ticketing.</a>
+            </div>
+
+            <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+        </header>
 
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
@@ -97,6 +96,8 @@
                 <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.html" class="active"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="profile.html"><i class="ph ph-user"></i>Mon Profil</a></li>
+                <li><a href="settings.html"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -111,18 +112,11 @@
         </nav>
 
         <main class="main-content">
-            <button class="btn btn-primary btn-floating" onclick="togglePopup('ticket-popup')"><i
-                    class="ph-bold ph-plus"></i> Créer</button>
+            <button class="btn btn-primary btn-floating" onclick="togglePopup('ticket-popup')"><i class="ph-bold ph-plus"></i> <span>Nouveau</span></button>
 
             <div class="content-scroll">
                 <div class="top-bar glass-panel animate-item">
                     <h2>Tickets</h2>
-                </div>
-
-                <div class="tabs-nav animate-item delay-1">
-                    <div class="tab-link active">Tous les projets</div>
-                    <div class="tab-link">Mes projets <span class="text-muted text-sm">(4)</span></div>
-                    <div class="tab-link">Archivés</div>
                 </div>
 
                 <div class="filters-bar animate-item delay-2">
@@ -133,9 +127,10 @@
                     <div class="flex gap-sm">
                         <div class="input-group" style="width: 160px;">
                             <i class="ph ph-funnel"></i>
-                            <select>
-                                <option>Statut: Tout</option>
-                                <option>En cours</option>
+                            <select id="filter-type">
+                                <option value="Tout">Type: Tout</option>
+                                <option value="Facturable">Facturable</option>
+                                <option value="Inclus">Inclus</option>
                             </select>
                         </div>
                         <div class="input-group" style="width: 160px;">
@@ -167,15 +162,6 @@
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
-                    <div class="pagination-wrapper">
-                        <div class="text-muted text-sm">4 sur 12</div>
-                        <div class="pagination">
-                            <div class="page-btn"><i class="ph-bold ph-caret-left"></i></div>
-                            <div class="page-btn active">1</div>
-                            <div class="page-btn">2</div>
-                            <div class="page-btn"><i class="ph-bold ph-caret-right"></i></div>
-                        </div>
                     </div>
                 </div>
             </div>

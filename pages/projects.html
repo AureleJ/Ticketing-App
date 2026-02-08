@@ -11,7 +11,6 @@
 
 <body>
     <div class="app-container">
-
         <div class="popup-overlay hidden" id="project-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
@@ -30,7 +29,7 @@
 
                         <div class="input-group mb-md">
                             <i class="ph ph-building"></i>
-                            <input type="text" id="client" name="client" placeholder="Client / Entreprise" required>
+                            <input type="text" id="nom-client" name="nom-client" placeholder="Client / Entreprise" required>
                         </div>
                     </div>
 
@@ -45,8 +44,13 @@
             </div>
         </div>
 
-        <div class="glass-panel toast succes text-sm hidden" id="toast">
-        </div>
+        <header class="mobile-header">
+            <div class="text-logo">
+                <a href="index.html">Ticketing.</a>
+            </div>
+
+            <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+        </header>
 
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
@@ -55,6 +59,8 @@
                 <li><a href="projects.html" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="profile.html"><i class="ph ph-user"></i>Mon Profil</a></li>
+                <li><a href="settings.html"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -105,8 +111,8 @@
 
                 <div class="projects-grid animate-item delay-3" id="projects-grid"></div>
             </div>
-            <button class="btn btn-primary btn-floating" onclick="togglePopup('project-popup')"><i
-                    class="ph-bold ph-plus"></i> Nouveau</button>
+            
+            <button class="btn btn-primary btn-floating" onclick="togglePopup('project-popup')"><i class="ph-bold ph-plus"></i> <span>Nouveau</span></button>
         </main>
     </div>
     <script src="../assets/js/script.js"></script>

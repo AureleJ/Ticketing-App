@@ -14,25 +14,48 @@
         <div class="popup-overlay hidden" id="client-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
-                    <h3 class="text-lg font-bold">Ajouter un Client</h3>
-                    <button class="btn-icon" onclick="togglePopup('client-popup')"><i class="ph-bold ph-x"></i></button>
+                    <h3 class="text-lg font-semibold">Nouveau projet</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('client-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
                 </div>
-                <div class="popup-body">
-                    <div class="input-group mb-md"><i class="ph ph-buildings"></i><input type="text"
-                            placeholder="Nom entreprise"></div>
-                    <div class="input-group mb-md"><i class="ph ph-user"></i><input type="text" placeholder="Contact">
+
+                <form id="client-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-building"></i>
+                            <input type="text" id="entreprise" name="entreprise" placeholder="Entreprise" required>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-envelope"></i>
+                            <input type="text" id="mail" name="mail" placeholder="Mail" required>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-user"></i>
+                            <input type="text" id="contact" name="contact" placeholder="Contact" required>
+                        </div>
                     </div>
-                    <div class="input-group mb-md"><i class="ph ph-envelope-simple"></i><input type="email"
-                            placeholder="Email"></div>
-                    <div class="input-group textarea-group"><i class="ph ph-info"></i><textarea
-                            placeholder="Notes..."></textarea></div>
-                </div>
-                <div class="popup-footer">
-                    <button class="btn btn-secondary" onclick="togglePopup('client-popup')">Annuler</button>
-                    <button class="btn btn-primary">Enregistrer</button>
-                </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="togglePopup('client-popup')">Annuler</button>
+
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+
+                </form>
             </div>
         </div>
+
+        <header class="mobile-header">
+            <div class="text-logo">
+                <a href="index.html">Ticketing.</a>
+            </div>
+
+            <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+        </header>
 
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
@@ -41,6 +64,8 @@
                 <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="clients.html" class="active"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="profile.html"><i class="ph ph-user"></i>Mon Profil</a></li>
+                <li><a href="settings.html"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -56,7 +81,7 @@
 
         <main class="main-content">
             <button class="btn btn-primary btn-floating" onclick="togglePopup('client-popup')"><i
-                    class="ph-bold ph-plus"></i> Nouveau</button>
+                    class="ph-bold ph-plus"></i> <span>Nouveau</span></button>
 
             <div class="content-scroll">
                 <div class="top-bar glass-panel animate-item">

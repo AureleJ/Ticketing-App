@@ -11,16 +11,49 @@
 
 <body>
     <div class="app-container">
-        <div id="validation-panel" class="glass-panel pannel animate-item delay-2 hidden">
-            <h3 class="text-sm font-bold text-muted uppercase mb-md">Validation Client</h3>
-            <p class="text-xs text-muted mb-md">Ce ticket est marqué comme <b>Facturable</b> et nécessite une
-                approbation.</p>
-            <div class="flex-col gap-sm">
-                <button class="btn btn-primary w-full" onclick="showToast('Ticket validé !')">Valider la
-                    facturation</button>
-                <button class="btn btn-secondary w-full" onclick="togglePopup('refusal-popup')">Refuser</button>
+        
+        <div class="popup-overlay hidden" id="edit-project-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Modifier le projet</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('edit-project-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <form id="edit-project-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder"></i>
+                            <input type="text" id="nom-projet" name="nom_projet" placeholder="Nom du projet" required autofocus>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-building"></i>
+                            <input type="text" id="client" name="client" placeholder="Client / Entreprise" required>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-calendar"></i>
+                            <input type="text" id="description" name="description" placeholder="Description" required>
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('edit-project-popup')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                </form>
             </div>
         </div>
+
+        <header class="mobile-header">
+            <div class="text-logo">
+                <a href="index.html">Ticketing.</a>
+            </div>
+
+            <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+        </header>
 
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
@@ -29,6 +62,8 @@
                 <li><a href="projects.html" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="profile.html"><i class="ph ph-user"></i>Mon Profil</a></li>
+                <li><a href="settings.html"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -44,13 +79,16 @@
 
         <main class="main-content">
             <div class="content-scroll">
-                <div class="flex-between flex-between top-bar glass-panel animate-item">
+                
+                <div class="flex-between top-bar glass-panel animate-item">
                     <a href="projects.html" class="btn btn-secondary no-border">
-                        <i class="ph-bold ph-arrow-left"></i> Retour aux projets
+                        <i class="ph-bold ph-arrow-left"></i> Retour
                     </a>
 
                     <div class="flex gap-sm">
-                        <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> Modifier</button>
+                        <button class="btn btn-secondary" onclick="togglePopup('edit-project-popup')">
+                            <i class="ph ph-pencil-simple"></i> <span>Modifier</span>
+                        </button>
                     </div>
                 </div>
 
@@ -67,9 +105,9 @@
                     </div>
                 </div>
 
-                <div class="flex gap-lg animate-item delay-2">
+                <div class="flex gap-lg animate-item delay-2 responsive-stack">
 
-                    <div class="glass-panel pannel flex-col gap-sm animate-item delay-1 flex-1">
+                    <div class="glass-panel pannel flex-col gap-sm flex-1">
                         <h3 class="text-lg font-bold">À propos du projet</h3>
                         <p class="text-muted" style="line-height: 1.6;">
                             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nam excepturi maxime odit ut perspiciatis! Reiciendis, ex iusto? Assumenda quisquam quibusdam molestias deleniti quos fugiat, natus doloremque libero alias odio soluta.
@@ -86,15 +124,6 @@
                                     <div class="text-muted text-xs">Role</div>
                                 </div>
                             </div>
-
-                            <div class="flex-center-y gap-sm">
-                                <div class="user-avatar outline">AJ</div>
-                                <div class="flex-1">
-                                    <div class="font-bold text-sm">Aurele J.</div>
-                                    <div class="text-muted text-xs">Role</div>
-                                </div>
-                            </div>
-
                             <div class="flex-center-y gap-sm">
                                 <div class="user-avatar outline">AJ</div>
                                 <div class="flex-1">
@@ -108,7 +137,7 @@
 
                 <div class="flex-col gap-lg animate-item delay-2">
 
-                    <div class="flex-row gap-lg">
+                    <div class="flex-row gap-lg responsive-stack">
                         <div class="glass-panel pannel flex-col item-between w-full">
                             <span class="text-muted text-sm font-bold uppercase">Avancement</span>
                             <div>
@@ -117,8 +146,7 @@
                                     <span class="text-xs text-muted">Jalon 2/4</span>
                                 </div>
                                 <div class="progress-track">
-                                    <div class="progress-fill" style="width: 45%; background: var(--accent-color);">
-                                    </div>
+                                    <div class="progress-fill" style="width: 45%; background: var(--accent-color);"></div>
                                 </div>
                             </div>
                         </div>
@@ -131,8 +159,7 @@
                                     <span class="text-xs text-muted">sur 150h</span>
                                 </div>
                                 <div class="progress-track">
-                                    <div class="progress-fill" style="width: 28%; background: var(--warning-color);">
-                                    </div>
+                                    <div class="progress-fill" style="width: 28%; background: var(--warning-color);"></div>
                                 </div>
                             </div>
                         </div>
@@ -159,18 +186,13 @@
                             </div>
                             
                             <div class="progress-track">
-                                <div class="progress-fill"
-                                    style="width: calc(4 / 12 * 100%); background: var(--text-primary);"></div>
-                                <div class="progress-fill"
-                                    style="width: calc(1 / 12 * 100%); background: var(--success-color);"></div>
-                                <div class="progress-fill"
-                                    style="width: calc(3 / 12 * 100%); background: var(--warning-color);"></div>
-                                <div class="progress-fill"
-                                    style="width: calc(4 / 12 * 100%); background: var(--danger-color);"></div>
+                                <div class="progress-fill" style="width: 33%; background: var(--text-primary);"></div>
+                                <div class="progress-fill" style="width: 8%; background: var(--success-color);"></div>
+                                <div class="progress-fill" style="width: 25%; background: var(--warning-color);"></div>
+                                <div class="progress-fill" style="width: 33%; background: var(--danger-color);"></div>
                             </div>
                         </div>
                     </div>
-
 
                     <div class="pannel glass-panel animate-item delay-2">
                         <h3 class="text-lg font-bold mb-md">Tickets liés au projet</h3>
@@ -190,8 +212,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                         <div class="pagination-wrapper">
