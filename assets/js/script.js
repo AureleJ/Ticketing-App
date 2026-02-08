@@ -38,7 +38,7 @@ const templates = {
     projects: [
         {
             name: "Création d'une application mobile",
-            client: "BioStore SAS",
+            client: "Bio Store",
             progress: 45,
             status: "En cours"
         },
@@ -64,18 +64,23 @@ const templates = {
     ]
 };
 
-const toast = document.querySelector("#toast");
 const ticketTableBody = document.querySelector("#ticket-table tbody");
 const projectTableBody = document.querySelector("#project-table tbody");
 const projectGrid = document.querySelector("#projects-grid");
 const clientsGrid = document.querySelector("#clients-grid");
 
-function showToast(message) {
-    if (!toast) return;
-    toast.innerText = message;
-    toast.classList.remove("hidden");
+const app = document.querySelector(".app-container");
+
+function showToast(message, type = 'success') {
+    const toast = `
+    <div class="glass-panel toast ${type} text-sm" id="toast">
+        ${message}
+    </div>
+    `
+    app.insertAdjacentHTML("beforeend", toast);
+    
     setTimeout(() => {
-        toast.classList.add("hidden");
+        document.getElementById("toast").remove();
     }, 3000);
 }
 
@@ -102,24 +107,24 @@ function createTicket(id, subject, client, assigned, date, status, type, priorit
     };
 
     return `
-        <tr onclick="window.location='ticket-details.html'">
+        <tr onclick="window.location='ticket-details.html'" class="ticket-row" data-type="${type}" data-status="${status}">
             <td class="font-mono text-muted">${id}</td>
-            <td><div class="text-title">${subject}</div></td>
+            <td><div class="text-title line-text">${subject}</div></td>
             <td>
                 <div class="flex-center-y gap-sm">
-                    <div class="user-avatar small yellow">${client[0]}</div>
-                    <span class="text-sm">${client}</span>
+                    <div class="user-avatar small yellow">${client.charAt(0).toUpperCase()}</div>
+                    <span class="text-sm line-text">${client}</span>
                 </div>
             </td>
             <td>
                 <div class="flex-center-y gap-sm">
-                    <div class="user-avatar small blue">${assigned[0]}</div>
-                    <span class="text-sm">${assigned}</span>
+                    <div class="user-avatar small blue">${assigned.charAt(0).toUpperCase()}</div>
+                    <span class="text-sm line-text">${assigned}</span>
                 </div>
             </td>
-            <td><span class="text-sm">${date}</span></td>
-            <td><span class="badge">${status}</span></td>
-            <td><span class="badge ${typeClass}">${type}</span></td>
+            <td><span class="text-sm line-text">${date}</span></td>
+            <td><span class="badge line-text">${status}</span></td>
+            <td><span class="badge line-text ${typeClass}">${type}</span></td>
             <td class="${prioritiesText[priority]} font-bold text-sm">${prioritiesLabels[priority]}</td>
             <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
         </tr>
@@ -149,12 +154,12 @@ function createProjectRow(name, client, progress) {
     return `
         <tr onclick="window.location='project-details.html'">
             <td>
-                <div class="text-title">${name}</div>
+                <div class="text-title line-text">${name}</div>
             </td>
             <td>
                 <div class="user-infos">
-                    <div class="user-avatar yellow">${client[0]}</div>
-                    <div class="user-name">${client}</div>
+                    <div class="user-avatar yellow">${client.charAt(0).toUpperCase()}</div>
+                    <div class="user-name line-text">${client}</div>
                 </div>
             </td>
             <td>
@@ -174,9 +179,9 @@ function createProjectRow(name, client, progress) {
 
 function createClientCard(entreprise, mail, contact) {
     return `
-        <div class="glass-panel client-card">
+        <a class="glass-panel client-card" href="clients-details.html">
             <div class="client-header">
-                <div class="user-avatar large yellow">${entreprise[0]}</div>
+                <div class="user-avatar large yellow">${entreprise.charAt(0).toUpperCase()}</div>
                 <div>
                     <h3 class="text-lg font-bold">${entreprise}</h3>
                 </div>
@@ -189,9 +194,9 @@ function createClientCard(entreprise, mail, contact) {
             <div class="client-footer">
                 <div class="client-stat"><span>2</span> Projets</div>
                 <div class="client-stat"><span>15</span> Tickets</div>
-                <a class="btn-icon" href="clients-details.html"><i class="ph-bold ph-caret-right"></i></a>
+                <div class="btn-icon"><i class="ph-bold ph-caret-right"></i></div>
             </div>
-        </div>
+        </a>
     `;
 }
 
@@ -203,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ticket.assigned, ticket.date, ticket.status,
                 ticket.type, ticket.priority
             );
-
             ticketTableBody.insertAdjacentHTML("beforeend", html);
         });
     }
@@ -213,7 +217,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const html = createProjectCard(
                 project.name, project.client, project.progress,
             );
-
             projectGrid.insertAdjacentHTML("beforeend", html);
         });
     }
@@ -223,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const html = createClientCard(
                 client.entreprise, client.mail, client.contact,
             );
-
             clientsGrid.insertAdjacentHTML("beforeend", html);
         });
     }
@@ -233,14 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const html = createProjectRow(
                 project.name, project.client, project.progress,
             );
-
             projectTableBody.insertAdjacentHTML("beforeend", html);
         });
     }
 });
 
-/* --- Forms Ticket --- */
+/* --- Formulaires --- */
 
+// Formulaire Ticket
 const ticketForm = document.querySelector("#ticket-form");
 if (ticketForm) {
     ticketForm.addEventListener("submit", function (e) {
@@ -252,7 +254,7 @@ if (ticketForm) {
         const priority = document.querySelector("#priority").value;
         const typeSelect = document.querySelector("#type").value;
 
-        const typeLabel = typeSelect === 'factureable' ? 'Facturable' : 'Inclus';
+        const typeLabel = typeSelect === 'facturable' ? 'Facturable' : 'Inclus';
 
         const newId = "#" + (Math.floor(Math.random() * 9000) + 1000);
 
@@ -266,17 +268,91 @@ if (ticketForm) {
     });
 }
 
-/* --- Bar de recherche --- */
+// Formulaire Projet
+const projectForm = document.querySelector("#project-form");
+if (projectForm) {
+    projectForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const name = document.querySelector("#nom-projet").value;
+        const client = document.querySelector("#nom-client").value;
+
+        if (projectGrid)
+            projectGrid.insertAdjacentHTML("beforeend", createProjectCard(name, client, 0));
+
+        if (projectTableBody)
+            projectTableBody.insertAdjacentHTML("beforeend", createProjectRow(name, client, 0));
+
+        projectForm.reset();
+        togglePopup("project-popup");
+        showToast("Projet créé avec succès !");
+    });
+}
+
+const editProjectForm = document.querySelector("#edit-project-form");
+if (editProjectForm) {
+editProjectForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        editProjectForm.reset();
+        togglePopup("edit-project-popup");
+        showToast("Projet modifié avec succès !");
+    });
+}
+
+// Formulaire Client
+const clientForm = document.querySelector("#client-form");
+if (clientForm) {
+    clientForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const entreprise = document.querySelector("#entreprise").value;
+        const mail = document.querySelector("#mail").value;
+        const contact = document.querySelector("#contact").value;
+
+        const newCard = createClientCard(entreprise, mail, contact);
+
+        clientsGrid.insertAdjacentHTML("beforeend", newCard);
+
+        clientForm.reset();
+        togglePopup("client-popup");
+        showToast("Client créé avec succès !");
+    });
+}
+
+/* --- Filtres et recherche --- */
 
 const searchInput = document.querySelector('.search-wrapper input');
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
-        const value = e.target.value.toLowerCase();
-        const rows = document.querySelectorAll('#ticket-table tbody tr');
+        filterTickets();
+    });
+}
 
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(value) ? '' : 'none';
-        });
+const filterType = document.querySelector('#filter-type');
+if (filterType) {
+    filterType.addEventListener('change', () => {
+        filterTickets();
+    });
+}
+
+function filterTickets() {
+    const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+    const typeValue = filterType ? filterType.value : 'Tout'; // 'Tout', 'Facturable', 'Inclus'
+
+    const rows = document.querySelectorAll('#ticket-table tbody tr');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowType = row.getAttribute('data-type'); 
+
+        const matchesSearch = text.includes(searchValue);
+        const matchesType = (typeValue === 'Tout') || (rowType === typeValue);
+
+        if (matchesSearch && matchesType) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
     });
 }
