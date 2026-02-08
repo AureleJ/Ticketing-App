@@ -37,6 +37,18 @@
     flex-wrap: wrap;
 }
 
+.b-b {
+    border-bottom: 1px solid var(--text-secondary);
+}
+
+.line-text {
+    white-space: nowrap;     
+    overflow: hidden;        
+    text-overflow: ellipsis;  
+    max-width: 250px;         
+    display: block;           
+}
+
 .item-between {
     justify-content: space-between;
     align-items: space-between;
@@ -44,6 +56,22 @@
 
 .item-center {
     align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+.justify-start {
+    justify-content: flex-start;
 }
 
 .flex-1 {
