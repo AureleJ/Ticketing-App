@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients | Ticketing</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="popup-overlay hidden" id="client-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-bold">Ajouter un Client</h3>
+                    <button class="btn-icon" onclick="togglePopup('client-popup')"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <div class="popup-body">
+                    <div class="input-group mb-md"><i class="ph ph-buildings"></i><input type="text"
+                            placeholder="Nom entreprise"></div>
+                    <div class="input-group mb-md"><i class="ph ph-user"></i><input type="text" placeholder="Contact">
+                    </div>
+                    <div class="input-group mb-md"><i class="ph ph-envelope-simple"></i><input type="email"
+                            placeholder="Email"></div>
+                    <div class="input-group textarea-group"><i class="ph ph-info"></i><textarea
+                            placeholder="Notes..."></textarea></div>
+                </div>
+                <div class="popup-footer">
+                    <button class="btn btn-secondary" onclick="togglePopup('client-popup')">Annuler</button>
+                    <button class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html" class="active"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <button class="btn btn-primary btn-floating" onclick="togglePopup('client-popup')"><i
+                    class="ph-bold ph-plus"></i> Nouveau</button>
+
+            <div class="content-scroll">
+                <div class="top-bar glass-panel animate-item">
+                    <div class="flex-center-y gap-md">
+                        <h2>Clients</h2>
+                    </div>
+                </div>
+
+                <div class="filters-bar animate-item delay-1">
+                    <div class="input-group search-wrapper flex-1">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Rechercher...">
+                    </div>
+                </div>
+
+                <div class="clients-grid animate-item delay-2" id="clients-grid">
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>

@@ -2,7 +2,7 @@ const templates = {
     tickets: [
         {
             id: "#1024",
-            subject: "BUG 1",
+            subject: "Bug affichage menu mobile",
             client: "Bio Store",
             assigned: "Aurele Joblet",
             date: "Il y a 2h",
@@ -48,6 +48,19 @@ const templates = {
             progress: 15,
             status: "En cours"
         }
+    ],
+
+    clients: [
+        {
+            entreprise: "Bio Store",
+            mail: "contact@biostore.com",
+            contact: "Patrick F"
+        },
+        {
+            entreprise: "Tech Consult",
+            mail: "contact@techconsult.com",
+            contact: "Bibi J"
+        }
     ]
 };
 
@@ -55,6 +68,7 @@ const toast = document.querySelector("#toast");
 const ticketTableBody = document.querySelector("#ticket-table tbody");
 const projectTableBody = document.querySelector("#project-table tbody");
 const projectGrid = document.querySelector("#projects-grid");
+const clientsGrid = document.querySelector("#clients-grid");
 
 function showToast(message) {
     if (!toast) return;
@@ -158,6 +172,29 @@ function createProjectRow(name, client, progress) {
     `;
 }
 
+function createClientCard(entreprise, mail, contact) {
+    return `
+        <div class="glass-panel client-card">
+            <div class="client-header">
+                <div class="user-avatar large yellow">${entreprise[0]}</div>
+                <div>
+                    <h3 class="text-lg font-bold">${entreprise}</h3>
+                </div>
+                <div class="ml-auto"><span class="badge badge-active">Actif</span></div>
+            </div>
+            <div class="client-body">
+                <div class="contact-row"><i class="ph-bold ph-user"></i> <span>${contact}</span></div>
+                <div class="contact-row"><i class="ph-bold ph-envelope-simple"></i> <span>${mail}</span></div>
+            </div>
+            <div class="client-footer">
+                <div class="client-stat"><span>2</span> Projets</div>
+                <div class="client-stat"><span>15</span> Tickets</div>
+                <a class="btn-icon" href="clients-details.html"><i class="ph-bold ph-caret-right"></i></a>
+            </div>
+        </div>
+    `;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     if (ticketTableBody && templates.tickets) {
         templates.tickets.forEach(ticket => {
@@ -178,6 +215,16 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             projectGrid.insertAdjacentHTML("beforeend", html);
+        });
+    }
+
+    if (clientsGrid && templates.clients) {
+        templates.clients.forEach(client => {
+            const html = createClientCard(
+                client.entreprise, client.mail, client.contact,
+            );
+
+            clientsGrid.insertAdjacentHTML("beforeend", html);
         });
     }
 

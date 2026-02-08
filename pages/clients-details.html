@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Store | Clients</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <nav class="sidebar glass-panel">
+            <div class="text-logo">Ticketing.</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html" class="active"><i class="ph ph-users"></i> Clients</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="user-infos">
+                    <div class="user-avatar">AJ</div>
+                    <div class="user-info">
+                        <div class="user-name">Aurele Joblet</div>
+                        <div class="user-role">Developpeur</div>
+                    </div>
+                </div>
+                <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-scroll">
+
+                <div class="flex-between top-bar glass-panel animate-item">
+                    <a href="clients.html" class="btn btn-secondary no-border">
+                        <i class="ph-bold ph-arrow-left"></i> Retour aux clients
+                    </a>
+
+                    <div class="flex gap-sm">
+                        <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> Modifier</button>
+                        <button class="btn btn-primary"><i class="ph ph-trash"></i> Supprimer</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel pannel animate-item delay-1">
+                    <div class="flex-between flex-wrap gap-lg">
+                        
+                        <div class="flex-row gap-md flex-center-y">
+                            <div class="user-avatar large yellow">B</div>
+                            <div>
+                                <h1 class="text-xl font-bold mb-xs">Bio Store SAS</h1>
+                                <span class="badge badge-active">Actif</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-xl text-center">
+                            <div>
+                                <div class="text-muted text-xs uppercase font-bold mb-xs">Projets</div>
+                                <div class="text-xl font-bold">3</div>
+                            </div>
+                            <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;">
+                                <div class="text-muted text-xs uppercase font-bold mb-xs">Tickets</div>
+                                <div class="text-xl font-bold">12</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel pannel animate-item delay-2">
+                    <h3 class="text-sm font-bold uppercase text-muted mb-md">Projets associés au client</h3>
+                    <div class="projects-grid" id="projects-grid">
+                        </div>
+                </div>
+
+                <div class="glass-panel pannel animate-item delay-3">
+                    <div class="flex-between mb-md">
+                        <h3 class="text-sm font-bold uppercase text-muted">Tickets associés au client</h3>
+                        <a href="tickets.html" class="text-xs text-muted hover-text-white">Voir tout</a>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="ticket-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Sujet</th>
+                                    <th>Client</th>
+                                    <th>Assigné à</th>
+                                    <th>Créé</th>
+                                    <th>Statut</th>
+                                    <th>Type</th>
+                                    <th>Priorité</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <script src="../assets/js/script.js"></script>
+</body>
+
+</html>
