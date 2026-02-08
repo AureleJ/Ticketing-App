@@ -15,9 +15,9 @@
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.html" class="active"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
-                <li><a href="projects/projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
-                <li><a href="tickets/tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients/clients.html"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
+                <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
+                <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -63,64 +63,26 @@
                 <div class="pannel glass-panel animate-item delay-2">
                     <div class="flex-between mb-md">
                         <h3 class="text-lg">Tickets Récents</h3>
-                        <a href="tickets/tickets.html" class="text-muted text-sm">Voir tout</a>
+                        <a href="tickets.html" class="text-muted text-sm">Voir tout</a>
                     </div>
 
                     <div class="table-container">
-                        <table class="table">
+                        <table class="table" id="ticket-table">
                             <thead>
                                 <tr>
-                                    <th>Ticket</th>
+                                    <th>ID</th>
+                                    <th>Sujet</th>
                                     <th>Client</th>
+                                    <th>Assigné à</th>
+                                    <th>Créé</th>
                                     <th>Statut</th>
+                                    <th>Type</th>
+                                    <th>Priorité</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr onclick="window.location='tickets/ticket-details.html'">
-                                    <td>
-                                        <div class="text-title">Nom Ticket</div>
-                                        <div class="text-muted text-sm">#1024</div>
-                                    </td>
-                                    <td>
-                                        <div class="user-infos">
-                                            <div class="user-avatar yellow">NC</div>
-                                            <div class="user-name">Nom Client</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge badge-urgent">Urgent</span></td>
-                                    <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
-                                </tr>
 
-                                <tr onclick="window.location='tickets/ticket-details.html'">
-                                    <td>
-                                        <div class="text-title">Nom Ticket</div>
-                                        <div class="text-muted text-sm">#1024</div>
-                                    </td>
-                                    <td>
-                                        <div class="user-infos">
-                                            <div class="user-avatar yellow">NC</div>
-                                            <div class="user-name">Nom Client</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge badge-urgent">Urgent</span></td>
-                                    <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
-                                </tr>
-
-                                <tr onclick="window.location='tickets/ticket-details.html'">
-                                    <td>
-                                        <div class="text-title">Nom Ticket</div>
-                                        <div class="text-muted text-sm">#1024</div>
-                                    </td>
-                                    <td>
-                                        <div class="user-infos">
-                                            <div class="user-avatar yellow">NC</div>
-                                            <div class="user-name">Nom Client</div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge badge-active">En cours</span></td>
-                                    <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -129,11 +91,11 @@
                 <div class="pannel glass-panel animate-item delay-2">
                     <div class="flex-between mb-md">
                         <h3 class="text-lg">Projets Récents</h3>
-                        <a href="tickets/tickets.html" class="text-muted text-sm">Voir tout</a>
+                        <a href="tickets.html" class="text-muted text-sm">Voir tout</a>
                     </div>
 
                     <div class="table-container">
-                        <table class="table">
+                        <table class="table" id="project-table">
                             <thead>
                                 <tr>
                                     <th>Projet</th>
@@ -143,53 +105,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr onclick="window.location='projects/project-details.html'">
-                                    <td>
-                                        <div class="text-title">Nom Projet</div>
-                                    </td>
-                                    <td>
-                                        <div class="user-infos">
-                                            <div class="user-avatar yellow">NC</div>
-                                            <div class="user-name">Nom Client</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="mt-auto">
-                                            <div class="flex-between text-xs text-muted mb-sm">
-                                                <span class="text-warning">84%</span>
-                                            </div>
-                                            <div class="progress-track">
-                                                <div class="progress-fill"
-                                                    style="width: 84%; background: var(--warning-color);"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
-                                </tr>
-
-                                <tr onclick="window.location='projects/project-details.html'">
-                                    <td>
-                                        <div class="text-title">Nom Projet</div>
-                                    </td>
-                                    <td>
-                                        <div class="user-infos">
-                                            <div class="user-avatar yellow">NC</div>
-                                            <div class="user-name">Nom Client</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="mt-auto">
-                                            <div class="flex-between text-xs text-muted mb-sm">
-                                                <span class="text-success">15%</span>
-                                            </div>
-                                            <div class="progress-track">
-                                                <div class="progress-fill"
-                                                    style="width: 15%; background: var(--success-color);"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -211,6 +126,7 @@
             </div>
         </main>
     </div>
+    <script src="../assets/js/script.js"></script>
 </body>
 
 </html>
