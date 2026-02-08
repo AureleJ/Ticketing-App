@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body>
     <div class="app-container">
+
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
@@ -31,85 +34,88 @@
 
         <main class="main-content">
             <div class="content-scroll">
-                <div class="top-bar glass-panel animate-item">
-                    <a href="tickets.html" class="btn btn-secondary">
-                        <i class="ph-bold ph-arrow-left"></i> Retour
+
+                <div class="flex-between top-bar glass-panel animate-item">
+                    <a href="projects.html" class="btn btn-secondary no-border">
+                        <i class="ph-bold ph-arrow-left"></i> Retour aux tickets
                     </a>
+
                     <div class="flex gap-sm">
                         <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> Modifier</button>
-                        <button class="btn btn-timer"><i class="ph-fill ph-clock-countdown"></i> Timer: 00:42:15</button>
+                        <button class="btn btn-primary"><i class="ph ph-trash-simple"></i>Fermer le ticket</button>
                     </div>
                 </div>
 
-                <div class="ticket-layout animate-item delay-1">
-                    <div class="glass-panel pannel flex-col" style="min-height: 600px;">
-                        <div class="ticket-header-meta">
-                            <div class="flex-between flex-start">
-                                <div>
-                                    <div class="flex-center-y gap-sm mb-xs">
-                                        <span class="text-muted font-mono text-sm">#1024</span>
-                                        <div class="user-avatar small yellow">B</div>
-                                        <span class="text-sm text-muted">BioStore SAS</span>
-                                    </div>
-                                    <h1 class="text-title text-xl">Le menu burger ne s'ouvre pas</h1>
-                                </div>
-                                <button class="btn-icon btn-discret"><i class="ph-bold ph-dots-three-vertical"></i></button>
-                            </div>
-                            <p class="ticket-quote text-muted">
-                                <i class="ph-fill ph-quote"></i> Le client signale que sur iPhone 13, le clic ne marche pas...
+                <div class="glass-panel pannel animate-item delay-1">
+                    <div class="flex-col gap-md">
+                        <div class="flex gap-sm">
+                            <span class="badge badge-active">En cours</span>
+                            <span class="badge badge-urgent">Facturable</span>
+                            <span class="text-muted text-sm flex-center-y ml-auto">Ouvert il y a 2h</span>
+                        </div>
+                        <div class="flex-col gap-sm mb-xs">
+                            <span class="text-muted font-mono">#1024</span>
+                            <h1 class="text-xl font-bold">Bug affichage menu mobile</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-layout animate-item delay-2">
+
+                    <div class="flex-col gap-lg">
+
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold uppercase mb-md">Description</h3>
+                            <p class="text-muted" style="line-height: 1.6;">
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi impedit laboriosam cupiditate vitae ab molestias ea porro consectetur quis. Adipisci voluptas praesentium ipsum necessitatibus voluptatum! Fugit reprehenderit voluptatibus porro provident?
                             </p>
-                        </div>
-
-                        <div class="discussion-feed">
-                            <div class="discussion-item animate-item delay-2">
-                                <div class="user-avatar yellow">CL</div>
-                                <div>
-                                    <span class="meta-info">Client BioStore • Il y a 2h</span>
-                                    <div class="bubble"><p>C'est urgent, lancement promo demain !</p></div>
-                                </div>
-                            </div>
-                            <div class="discussion-item own animate-item delay-3">
-                                <div class="user-avatar outline">AJ</div>
-                                <div class="flex-col" style="align-items:flex-end;">
-                                    <span class="meta-info">Vous • Il y a 30 min</span>
-                                    <div class="bubble"><p>Je pousse un correctif dans 15min.</p></div>
-                                    <span class="text-muted text-xs mt-xs"><i class="ph-bold ph-check-double"></i> Vu</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="chat-input-area">
-                            <div class="chat-input-box">
-                                <button class="btn-icon"><i class="ph ph-paperclip"></i></button>
-                                <textarea class="chat-textarea w-full" placeholder="Répondre..." rows="1"></textarea>
-                                <button class="btn btn-primary"><i class="ph-bold ph-paper-plane-right"></i></button>
-                            </div>
                         </div>
                     </div>
 
                     <div class="flex-col gap-lg">
-                        <div class="glass-panel pannel animate-item delay-2">
-                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Infos Clés</h3>
-                            <ul class="flex-col gap-md">
-                                <li class="flex-between"><span class="text-muted">Statut</span><span class="badge badge-urgent">Urgent</span></li>
-                                <li class="flex-between"><span class="text-muted">Priorité</span><span class="text-danger font-bold">Haute</span></li>
-                                <li class="flex-between"><span class="text-muted">Assigné à</span><div class="flex-center-y gap-xs"><div class="user-avatar small outline">AJ</div><span>Aurele J.</span></div></li>
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Détails</h3>
+                            <ul class="flex-col gap-md text-sm">
+                                <li class="flex-between">
+                                    <span class="text-muted">Client</span>
+                                    <div class="flex-center-y gap-xs font-bold">
+                                        <div class="user-avatar small yellow">B</div> BioStore SAS
+                                    </div>
+                                </li>
+                                <li class="flex-between">
+                                    <span class="text-muted">Projet</span>
+                                    <span>Refonte Mobile</span>
+                                </li>
+                                <li class="flex-between">
+                                    <span class="text-muted">Priorité</span>
+                                    <span class="text-danger font-bold">Haute</span>
+                                </li>
+                                <li class="flex-between">
+                                    <span class="text-muted">Assigné à</span>
+                                    <div class="flex-center-y gap-xs">
+                                        <div class="user-avatar small outline">AJ</div> Aurele J.
+                                    </div>
+                                </li>
                             </ul>
                         </div>
-                        <div class="glass-panel pannel animate-item delay-3">
-                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Suivi Temps</h3>
+
+                        <div class="glass-panel pannel">
+                            <h3 class="text-sm font-bold text-muted uppercase mb-md">Temps passé</h3>
                             <div class="text-center mb-md">
                                 <div class="text-2xl font-bold text-success">2h 30m</div>
-                                <span class="text-muted text-sm">sur 4h estimées</span>
+                                <span class="text-muted text-sm">Estimé : 4h 00m</span>
                             </div>
                             <div class="progress-track mb-sm">
                                 <div class="progress-fill" style="width: 65%; background: var(--success-color);"></div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </main>
     </div>
+    <script src="../assets/js/script.js"></script>
 </body>
+
 </html>
