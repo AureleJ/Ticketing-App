@@ -417,6 +417,7 @@ textarea {
 .user-avatar {
     width: 32px;
     height: 32px;
+    aspect-ratio: 1;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), #a855f7);
     display: flex;
@@ -468,8 +469,8 @@ textarea {
     background: rgba(255, 255, 255, 0.1);
     height: 6px;
     border-radius: 10px;
-    overflow: hidden;
     width: 100%;
+    display: flex;
 }
 
 .progress-fill {
