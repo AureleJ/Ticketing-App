@@ -11,6 +11,146 @@
 
 <body>
     <div class="app-container">
+        
+        <div class="popup-overlay hidden" id="ticket-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Nouveau Ticket</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('ticket-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <form id="ticket-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-text-t"></i>
+                            <input type="text" id="subject" name="subject" placeholder="Sujet du ticket" required autofocus>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder-notch"></i>
+                            <select id="client" name="client" required>
+                                <option value="" disabled selected>Client</option>
+                                <option value="Bio Store">Bio Store</option>
+                                <option value="Tech Consult">Tech Consult</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder-notch"></i>
+                            <select id="assigned" name="assigned" required>
+                                <option value="" disabled selected>Assigné à</option>
+                                <option value="Aurele Joblet">Aurele Joblet</option>
+                                <option value="Jean Dev">Jean Dev</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-warning-circle"></i>
+                            <select id="priority" name="priority" required>
+                                <option value="" disabled selected>Priorité</option>
+                                <option value="low">Basse</option>
+                                <option value="medium">Moyenne</option>
+                                <option value="high">Haute</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-warning-circle"></i>
+                            <select id="type" name="type" required>
+                                <option value="" disabled selected>Type</option>
+                                <option value="facturable">Facturable</option>
+                                <option value="inclus">Inclus</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group textarea-group">
+                            <i class="ph ph-article"></i>
+                            <textarea id="description" name="description" placeholder="Description détaillée..." rows="5" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('ticket-popup')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="popup-overlay hidden" id="client-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Nouveau Client</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('client-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <form id="client-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-building"></i>
+                            <input type="text" id="entreprise" name="entreprise" placeholder="Entreprise" required>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-envelope"></i>
+                            <input type="text" id="mail" name="mail" placeholder="Mail" required>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-user"></i>
+                            <input type="text" id="contact" name="contact" placeholder="Contact" required>
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('client-popup')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="popup-overlay hidden" id="project-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Nouveau projet</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('project-popup')">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
+
+                <form id="project-form">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder"></i>
+                            <input type="text" id="nom-projet" name="nom_projet" placeholder="Nom du projet" required autofocus>
+                        </div>
+
+                        <div class="input-group mb-md">
+                            <i class="ph ph-building"></i>
+                            <input type="text" id="nom-client" name="nom-client" placeholder="Client / Entreprise" required>
+                        </div>
+                    </div>
+
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('project-popup')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <header class="mobile-header">
+            <div class="text-logo">
+                <a href="index.html">Ticketing.</a>
+            </div>
+            <a href="../index.html" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+        </header>
+
         <nav class="sidebar glass-panel">
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
@@ -18,6 +158,8 @@
                 <li><a href="projects.html"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.html"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="clients.html"><i class="ph ph-users"></i> Clients</a></li>
+                <li><a href="profile.html"><i class="ph ph-user"></i>Mon Profil</a></li>
+                <li><a href="settings.html"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
@@ -33,30 +175,55 @@
 
         <main class="main-content">
             <div class="content-scroll">
+                
                 <div class="top-bar glass-panel animate-item">
                     <h2>Tableau de bord</h2>
                 </div>
 
-                <div class="stats-grid animate-item delay-1">
-                    <div class="stat-item glass-panel">
-                        <i class="ph ph-ticket stat-icon-bg"></i>
-                        <div class="stat-label">Tickets en cours</div>
-                        <div class="stat-number">12</div>
+                <div class="flex gap-md animate-item delay-1 dashboard-stack">
+                    
+                    <div class="flex gap-md w-full stats-stack">
+                        
+                        <div class="flex-col gap-md w-full">
+                            <div class="stat-item glass-panel">
+                                <i class="ph ph-ticket stat-icon-bg"></i>
+                                <div class="stat-label">Tickets en cours</div>
+                                <div class="stat-number">12</div>
+                            </div>
+                            <div class="stat-item glass-panel">
+                                <i class="ph ph-check-circle stat-icon-bg"></i>
+                                <div class="stat-label">À Valider</div>
+                                <div class="stat-number text-warning">4</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-col gap-md w-full">
+                            <div class="stat-item glass-panel">
+                                <i class="ph ph-fire stat-icon-bg"></i>
+                                <div class="stat-label">Urgents</div>
+                                <div class="stat-number text-danger">2</div>
+                            </div>
+                            <div class="stat-item glass-panel">
+                                <i class="ph ph-clock stat-icon-bg"></i>
+                                <div class="stat-label">Temps total</div>
+                                <div class="stat-number">34h</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item glass-panel">
-                        <i class="ph ph-check-circle stat-icon-bg"></i>
-                        <div class="stat-label">À Valider</div>
-                        <div class="stat-number text-warning">4</div>
-                    </div>
-                    <div class="stat-item glass-panel">
-                        <i class="ph ph-fire stat-icon-bg"></i>
-                        <div class="stat-label">Urgents</div>
-                        <div class="stat-number text-danger">2</div>
-                    </div>
-                    <div class="stat-item glass-panel">
-                        <i class="ph ph-clock stat-icon-bg"></i>
-                        <div class="stat-label">Temps total</div>
-                        <div class="stat-number">34h</div>
+
+                    <div class="pannel glass-panel w-full">
+                        <h3 class="text-lg mb-md">Actions Rapides</h3>
+                        <div class="stats-grid">
+                            <button class="btn btn-secondary w-full" onclick="togglePopup('ticket-popup')">
+                                <i class="ph-bold ph-plus-circle text-info"></i>Nouveau Ticket
+                            </button>
+                            <button class="btn btn-secondary w-full" onclick="togglePopup('project-popup')">
+                                <i class="ph-bold ph-plus-circle text-info"></i>Nouveau Projet
+                            </button>
+                            <button class="btn btn-secondary w-full" onclick="togglePopup('client-popup')">
+                                <i class="ph-bold ph-plus-circle text-info"></i>Nouveau Client
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -82,8 +249,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -91,7 +257,7 @@
                 <div class="pannel glass-panel animate-item delay-2">
                     <div class="flex-between mb-md">
                         <h3 class="text-lg">Projets Récents</h3>
-                        <a href="tickets.html" class="text-muted text-sm">Voir tout</a>
+                        <a href="projects.html" class="text-muted text-sm">Voir tout</a>
                     </div>
 
                     <div class="table-container">
@@ -105,23 +271,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="pannel glass-panel animate-item delay-3">
-                    <h3 class="text-lg mb-md">Actions Rapides</h3>
-                    <div class="stats-grid">
-                        <button class="btn btn-secondary action-btn">
-                            <i class="ph-bold ph-plus-circle text-info"></i>
-                            <span>Nouveau Ticket</span>
-                        </button>
-                        <button class="btn btn-secondary action-btn">
-                            <i class="ph-bold ph-plus-circle text-info"></i>
-                            <span>Nouveau Projet</span>
-                        </button>
+                <div class="pannel glass-panel animate-item delay-2">
+                    <div class="flex-between mb-md">
+                        <h3 class="text-lg">Clients Récents</h3>
+                        <a href="clients.html" class="text-muted text-sm">Voir tout</a>
                     </div>
+                    <div class="clients-grid animate-item delay-2" id="clients-grid">
+                    </div>  
                 </div>
             </div>
         </main>
