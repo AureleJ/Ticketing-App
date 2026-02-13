@@ -3,81 +3,63 @@ require_once __DIR__ . '/../Entity/UserEntity.php';
 
 class UserRepository
 {
-    private array $mockData = [
-        [
-            "id" => 1,
-            "firstname" => "Aurele",
-            "lastname" => "Joblet",
-            "email" => "aurele@ticketing.com",
-            "role" => "Admin",
-            "status" => "Active",
-            "avatar_color" => "blue"
-        ],
-        [
-            "id" => 2,
-            "firstname" => "Jean",
-            "lastname" => "Dev",
-            "email" => "jean@ticketing.com",
-            "role" => "Lead Dev",
-            "status" => "Active",
-            "avatar_color" => "yellow"
-        ],
-        [
-            "id" => 3,
-            "firstname" => "Sophie",
-            "lastname" => "Graph",
-            "email" => "sophie@design.com",
-            "role" => "Designer UI/UX",
-            "status" => "Active",
-            "avatar_color" => "purple"
-        ],
-        [
-            "id" => 4,
-            "firstname" => "Paul",
-            "lastname" => "Sysadmin",
-            "email" => "paul@ops.com",
-            "role" => "DevOps",
-            "status" => "Inactive",
-            "avatar_color" => "red"
-        ],
-        [
-            "id" => 5,
-            "firstname" => "Julie",
-            "lastname" => "Front",
-            "email" => "julie@ticketing.com",
-            "role" => "Dev Front-end",
-            "status" => "Active",
-            "avatar_color" => "cyan"
-        ],
-        [
-            "id" => 6,
-            "firstname" => "Thomas",
-            "lastname" => "Mark",
-            "email" => "thomas@marketing.com",
-            "role" => "Marketing",
-            "status" => "Active",
-            "avatar_color" => "green"
-        ]
-    ];
+    private $db;
+    private $tableName = 'users';
 
-    public function findAll(): array
+    public function __construct()
     {
-        return array_map(fn($item) => new UserEntity($item), $this->mockData);
+        $service = new DatabaseService();
+        $this->db = $service->connect();
     }
 
-    public function findById(int $id): ?UserEntity
+    public function getAllUser()
     {
-        foreach ($this->mockData as $data) {
-            if ($data['id'] === $id) {
-                return new UserEntity($data);
-            }
+        try {
+            $query = "SELECT * FROM $this->tableName";
+            $stmt = $this->db->query($query);
+            $data = $stmt->fetchAll();
+            $clients = array_map(fn($item) => new UserEntity($item), $data);
+            return $clients;
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . $e->getMessage() . "</pre>";
+            return [];
         }
-        return null;
     }
 
-    public function create(array $data): void
+    public function getClientsById($id)
     {
-        $data['id'] = count($this->mockData) + 1;
-        $this->mockData[] = $data;
+        try {
+            $query = "SELECT * FROM $this->tableName WHERE id=:id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":id" => $id
+            ]);
+            $data = $stmt->fetch();
+            return new UserEntity($data);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . $e->getMessage() . "</pre>";
+            return new UserEntity([]);
+        }
+    }
+
+     public function createUser(array $params)
+    {
+        try {
+            $query = "INSERT INTO $this->tableName (company, contact_name, email, phone, status, avatar_color) VALUES (:company, :contact_name, :email, :phone, :status, :avatar_color)";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":company" => $params["company"],
+                ":contact_name" => $params["contact_name"],
+                ":email" => $params["email"],
+                ":phone" => $params["phone"],
+                ":status" => $params["status"],
+                ":avatar_color" => $params["avatar_color"],
+            ]);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . $e->getMessage() . "</pre>";
+        }
     }
 }

@@ -12,7 +12,9 @@ $authUser = AuthService::getAuthUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $form = new ProjectForm($_POST);
-    $projectRepo->create($form->formatData());
+    $projectRepo->createProject($form->formatData());
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 $filters = [
@@ -22,9 +24,9 @@ $filters = [
     'sort' => $_GET['sort'] ?? 'recent'
 ];
 
-$allProjects = $projectRepo->findAll([]); 
-$filteredProjects = $projectRepo->findAll($filters);
-$allClients = $clientRepo->findAll();
+$allProjects = $projectRepo->getAllProjects(); 
+$filteredProjects = $projectRepo->getAllProjects($filters);
+$allClients = $clientRepo->getAllClients();
 ?>
 
 <!DOCTYPE html>
@@ -77,15 +79,15 @@ $allClients = $clientRepo->findAll();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $authUser->getFullName() ?></div>
                         <div class="user-role"><?= $authUser->role ?></div>
@@ -143,8 +145,8 @@ $allClients = $clientRepo->findAll();
                         <div class="text-muted text-center w-full" style="grid-column: 1/-1; padding: 40px;">Aucun projet trouvé.</div>
                     <?php else: ?>
                         <?php foreach ($filteredProjects as $project):
-                            $client = $clientRepo->findById($project->client_id);
-                            $owner = $userRepo->findById($project->owner_id);
+                            $client = $clientRepo->getClientsById($project->client_id);
+                            $owner = $userRepo->getClientsById($project->owner_id);
 
                             $statusClass = match ($project->status) {
                                 'En cours' => 'badge-active', 'En attente' => 'badge-waiting', 'Terminé' => 'badge', default => 'badge-outline'
@@ -156,7 +158,7 @@ $allClients = $clientRepo->findAll();
                                     <div class="card-header"><div class="badge <?= $statusClass ?>"><?= $project->status ?></div></div>
                                     <h3 class="project-title"><?= $project->name ?></h3>
                                     <div class="user-infos mb-xs">
-                                        <div class="user-avatar small <?= $client->avatarColor ?>"><?= $client->getInitials() ?></div>
+                                        <div class="user-avatar small <?= $client->avatar_color ?>"><?= $client->getInitials() ?></div>
                                         <span class="text-sm text-muted"><?= $client->company ?></span>
                                     </div>
                                 </div>
@@ -170,7 +172,7 @@ $allClients = $clientRepo->findAll();
                                     </div>
                                     <div class="card-footer">
                                         <div class="user-infos">
-                                            <div class="user-avatar small <?= $owner ? $owner->avatarColor : 'gray' ?>"><?= $owner->getInitials() ?></div>
+                                            <div class="user-avatar small <?= $owner ? $owner->avatar_color : 'gray' ?>"><?= $owner->getInitials() ?></div>
                                             <span class="text-xs text-muted">Resp: <?= $owner->getFullName() ?></span>
                                         </div>
                                         <div class="text-xs text-muted flex-center-y gap-xs">

@@ -5,20 +5,31 @@ require_once __DIR__ . '/../Repository/UserRepository.php';
 require_once __DIR__ . '/../Repository/ClientRepository.php';
 require_once __DIR__ . '/../Service/AuthService.php';
 
+// $debug =  new Debug();
+
 $projectRepo = new ProjectRepository();
 $ticketRepo = new TicketRepository();
 $userRepo = new UserRepository();
 $clientRepo = new ClientRepository();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $projectIdToDelete = (int) $_POST['id'];
+    $projectRepo->deleteProject($projectIdToDelete);
+    header('Location: projects.php');
+    exit;
+}
 $id = $_GET['id'];
 
-$project = $projectRepo->findById((int)$id);
-
-$client = $clientRepo->findById($project->client_id);
+$project = $projectRepo->getProjectsById($id);
+$client = $clientRepo->getClientsById($project->client_id);
 $tickets = $ticketRepo->findProjectTicket($project->id);
+// $debug->dd($tickets);
 
-$ticketStats = $ticketRepo->countTickets($tickets); 
-$totalTickets = $ticketStats[0];
+$totalTickets = count($tickets);
+$traited = count(array_filter($tickets, fn($p) => $p->status === 'Terminé'));
+$inProgress = count(array_filter($tickets, fn($p) => $p->status === 'En cours'));
+$waiting = count(array_filter($tickets, fn($p) => $p->status === 'En attente'));
+$untraited = count(array_filter($tickets, fn($p) => $p->status === 'Non traité'));
 
 $budgetPercent = ($project->total_h > 0) ? ($project->budget_h / $project->total_h * 100) : 0;
 $progressColor = $project->progress >= 80 ? 'var(--success-color)' : ($project->progress < 30 ? 'var(--warning-color)' : 'var(--accent-color)');
@@ -70,15 +81,15 @@ $authUser = AuthService::getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $authUser->getFullName() ?></div>
                         <div class="user-role"><?= $authUser->role ?></div>
@@ -94,6 +105,13 @@ $authUser = AuthService::getAuthUser();
                     <a href="projects.php" class="btn btn-secondary no-border"><i class="ph-bold ph-arrow-left"></i> Retour</a>
                     <div class="flex gap-sm">
                         <button class="btn btn-secondary" onclick="togglePopup('edit-project-popup')"><i class="ph ph-pencil-simple"></i> <span>Modifier</span></button>
+                        <form method="POST" onsubmit="return confirm('Etes vous sur de vouloir supprimer ce projet ? Si vous faites cela suprimmera touts les tickets liés au projet !');">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="<?= $project->id ?>">
+                            <button type="submit" class="btn btn-primary btn-danger">
+                                <i class="ph ph-trash"></i> <span>Supprimer</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -104,7 +122,7 @@ $authUser = AuthService::getAuthUser();
                     </div>
                     <h1 class="text-title text-2xl"><?= $project->name ?></h1>
                     <div class="text-muted flex-center-y gap-sm">
-                        <div class="user-avatar small <?= $client->avatarColor ?>"><?= $client->getInitials() ?></div>
+                        <div class="user-avatar small <?= $client->avatar_color ?>"><?= $client->getInitials() ?></div>
                         <?= $client->company ?>
                     </div>
                 </div>
@@ -122,11 +140,11 @@ $authUser = AuthService::getAuthUser();
                         <div class="flex gap-md flex-wrap">
                             <?php if (!empty($project->team)):
                                 foreach ($project->team as $memberData):
-                                    $memberUser = $userRepo->findById($memberData['user_id']);
+                                    $memberUser = $userRepo->getClientsById($memberData['user_id']);
                                     if (!$memberUser) continue;
                             ?>
                                 <div class="flex-center-y gap-sm">
-                                    <div class="user-avatar <?= $memberUser->avatarColor ?>"><?= $memberUser->getInitials() ?></div>
+                                    <div class="user-avatar <?= $memberUser->avatar_color ?>"><?= $memberUser->getInitials() ?></div>
                                     <div class="flex-1">
                                         <div class="font-bold text-sm"><?= $memberUser->getFullName() ?></div>
                                         <div class="text-muted text-xs"><?= $memberData["role"] ?></div>
@@ -163,17 +181,17 @@ $authUser = AuthService::getAuthUser();
                         <div class="glass-panel pannel flex-col item-between w-full">
                             <span class="text-muted text-sm font-bold uppercase">Tickets (<?= $totalTickets ?>)</span>
                             <div class="flex-between gap-lg mb-xs">
-                                <div class="flex-col flex-center"><div class="text-xl font-bold"><?= $ticketStats[1] ?></div><div class="text-xs text-muted">Traités</div></div>
-                                <div class="flex-col flex-center"><div class="text-xl font-bold text-success"><?= $ticketStats[2] ?></div><div class="text-xs text-muted">En cours</div></div>
-                                <div class="flex-col flex-center"><div class="text-xl font-bold text-warning"><?= $ticketStats[3] ?></div><div class="text-xs text-muted">Attente</div></div>
-                                <div class="flex-col flex-center"><div class="text-xl font-bold text-danger"><?= $ticketStats[4] ?></div><div class="text-xs text-muted">Urgents</div></div>
+                                <div class="flex-col flex-center"><div class="text-xl font-bold"><?= $traited ?></div><div class="text-xs text-muted">Traités</div></div>
+                                <div class="flex-col flex-center"><div class="text-xl font-bold text-success"><?= $inProgress ?></div><div class="text-xs text-muted">En cours</div></div>
+                                <div class="flex-col flex-center"><div class="text-xl font-bold text-warning"><?= $waiting ?></div><div class="text-xs text-muted">En attentes</div></div>
+                                <div class="flex-col flex-center"><div class="text-xl font-bold text-danger"><?= $untraited ?></div><div class="text-xs text-muted">Non traités</div></div>
                             </div>
                             <div class="progress-track">
                                 <?php if($totalTickets > 0): ?>
-                                    <div class="progress-fill" style="width: <?= $ticketStats[1]/$totalTickets*100 ?>%; background: var(--text-primary);"></div>
-                                    <div class="progress-fill" style="width: <?= $ticketStats[2]/$totalTickets*100 ?>%; background: var(--success-color);"></div>
-                                    <div class="progress-fill" style="width: <?= $ticketStats[3]/$totalTickets*100 ?>%; background: var(--warning-color);"></div>
-                                    <div class="progress-fill" style="width: <?= $ticketStats[4]/$totalTickets*100 ?>%; background: var(--danger-color);"></div>
+                                    <div class="progress-fill" style="width: <?= $traited/$totalTickets*100 ?>%; background: var(--text-primary);"></div>
+                                    <div class="progress-fill" style="width: <?= $inProgress/$totalTickets*100 ?>%; background: var(--success-color);"></div>
+                                    <div class="progress-fill" style="width: <?= $waiting/$totalTickets*100 ?>%; background: var(--warning-color);"></div>
+                                    <div class="progress-fill" style="width: <?= $untraited/$totalTickets*100 ?>%; background: var(--danger-color);"></div>
                                 <?php else: ?>
                                     <div class="progress-fill" style="width: 0;"></div>
                                 <?php endif; ?>
@@ -202,7 +220,7 @@ $authUser = AuthService::getAuthUser();
                                     </thead>
                                     <tbody>
                                         <?php foreach ($tickets as $ticket):
-                                            $assigned = $userRepo->findById($ticket->assigned_id);
+                                            $assigned = $userRepo->getClientsById($ticket->assigned_id);
                                             $statusClass = match($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge' };
                                             $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => '' };
                                             $typeClass = $ticket->type === 'Facturable' ? 'badge-urgent' : 'badge-active';
@@ -212,7 +230,7 @@ $authUser = AuthService::getAuthUser();
                                                 <td><div class="text-title line-text"><?= $ticket->subject ?></div></td>
                                                 <td>
                                                     <div class="flex-center-y gap-sm">
-                                                        <div class="user-avatar small <?= $assigned->avatarColor ?>"><?= $assigned->getInitials() ?></div>
+                                                        <div class="user-avatar small <?= $assigned->avatar_color ?>"><?= $assigned->getInitials() ?></div>
                                                         <span class="text-sm line-text"><?= $assigned->getFullName() ?></span>
                                                     </div>
                                                 </td>

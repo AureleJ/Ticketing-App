@@ -9,7 +9,7 @@ class UserEntity extends Entity
     public string $email;
     public string $role;
     public string $status;
-    public string $avatarColor;
+    public string $avatar_color;
 
     public function __construct(array $data)
     {
@@ -19,7 +19,7 @@ class UserEntity extends Entity
         $this->email = $data['email'] ?? '';
         $this->role = $data['role'] ?? 'User';
         $this->status = $data['status'] ?? 'Active';
-        $this->avatarColor = $data['avatar_color'] ?? 'blue';
+        $this->avatar_color = $data['avatar_color'] ?? 'blue';
     }
 
     public function getFullName(): string
@@ -37,8 +37,8 @@ class UserEntity extends Entity
 
     public function getAvatarColor(): string
     {
-        if (!empty($this->avatarColor)) {
-            return $this->avatarColor;
+        if (!empty($this->avatar_color)) {
+            return $this->avatar_color;
         }
 
         $colors = ['blue', 'yellow', 'green', 'red', 'purple', 'cyan'];

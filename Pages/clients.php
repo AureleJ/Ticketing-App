@@ -1,24 +1,34 @@
 <?php
-require_once __DIR__ . '/../Repository/ClientRepository.php';
 require_once __DIR__ . '/../Repository/ProjectRepository.php';
 require_once __DIR__ . '/../Repository/TicketRepository.php';
+require_once __DIR__ . '/../Repository/UserRepository.php';
+require_once __DIR__ . '/../Repository/ClientRepository.php';
 require_once __DIR__ . '/../Service/AuthService.php';
+require_once __DIR__ . '/../Form/TicketForm.php';
+require_once __DIR__ . '/../Form/ProjectForm.php';
 require_once __DIR__ . '/../Form/ClientForm.php';
+require_once __DIR__ . '/../Utils/Debug.php';
 
-$clientRepo = new ClientRepository();
-$projectRepo = new ProjectRepository();
+$debug = new Debug();
+
 $ticketRepo = new TicketRepository();
+$projectRepo = new ProjectRepository();
+$clientRepo = new ClientRepository();
+$userRepo = new UserRepository();
+
 $authUser = AuthService::getAuthUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $form = new ClientForm($_POST);
     $newClientData = $form->formatData();
-    $clientRepo->create($newClientData);
+    $clientRepo->createClient($newClientData);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
-$clients = $clientRepo->findAll();
-$allProjects = $projectRepo->findAll();
-$allTickets = $ticketRepo->findAll();
+$allClients = $clientRepo->getAllClients();
+$allProjects = $projectRepo->getAllProjects();
+$allTickets = $ticketRepo->getAllTickets();
 ?>
 
 <!DOCTYPE html>
@@ -64,15 +74,15 @@ $allTickets = $ticketRepo->findAll();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php" class="active"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php" class="active"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $authUser->getFullName() ?></div>
                         <div class="user-role"><?= $authUser->role ?></div>
@@ -100,7 +110,7 @@ $allTickets = $ticketRepo->findAll();
                 </div>
 
                 <div class="clients-grid animate-item delay-2" id="clients-grid">
-                    <?php foreach ($clients as $client): 
+                    <?php foreach ($allClients as $client): 
                         $nbProjects = count(array_filter($allProjects, fn($p) => $p->client_id === $client->id));
                         $nbTickets = count(array_filter($allTickets, fn($t) => $t->client_id === $client->id));
                         
@@ -108,7 +118,7 @@ $allTickets = $ticketRepo->findAll();
                     ?>
                         <a class="glass-panel client-card" href="clients-details.php?id=<?= $client->id ?>">
                             <div class="client-header">
-                                <div class="user-avatar large <?= $client->avatarColor ?>">
+                                <div class="user-avatar large <?= $client->avatar_color ?>">
                                     <?= $client->getInitials() ?>
                                 </div>
                                 <div><h3 class="text-lg font-bold"><?= $client->company ?></h3></div>

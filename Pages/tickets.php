@@ -10,12 +10,15 @@ $ticketRepo = new TicketRepository();
 $clientRepo = new ClientRepository();
 $userRepo = new UserRepository();
 $projectRepo = new ProjectRepository();
+
 $authUser = AuthService::getAuthUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $form = new TicketForm($_POST);
     $newTicket = $form->formatData();
-    $ticketRepo->create($newTicket);
+    $ticketRepo->createTicket($newTicket);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 $filters = [
@@ -24,10 +27,10 @@ $filters = [
     'status' => $_GET['status'] ?? 'all',
 ];
 
-$allTickets = $ticketRepo->findAll($filters);
-$allClients = $clientRepo->findAll();
-$allProjects = $projectRepo->findAll();
-$allUsers = $userRepo->findAll();
+$allTickets = $ticketRepo->getAllTickets($filters);
+$allClients = $clientRepo->getAllClients();
+$allProjects = $projectRepo->getAllProjects();
+$allUsers = $userRepo->getAllUser();
 ?>
 
 <!DOCTYPE html>
@@ -61,15 +64,6 @@ $allUsers = $userRepo->findAll();
                                 <option value="" disabled selected>Projet</option>
                                 <?php foreach ($allProjects as $p): ?>
                                     <option value="<?= $p->id ?>"><?= $p->name ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="input-group mb-md">
-                            <i class="ph ph-users"></i>
-                            <select name="client_id" required>
-                                <option value="" disabled selected>Client</option>
-                                <?php foreach ($allClients as $c): ?>
-                                    <option value="<?= $c->id ?>"><?= $c->company ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -122,15 +116,15 @@ $allUsers = $userRepo->findAll();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php" class="active"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $authUser->getFullName() ?></div>
                         <div class="user-role"><?= $authUser->role ?></div>
@@ -210,8 +204,8 @@ $allUsers = $userRepo->findAll();
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($allTickets as $ticket):
-                                        $client = $clientRepo->findById($ticket->client_id);
-                                        $assigned = $userRepo->findById($ticket->assigned_id);
+                                        $client = $clientRepo->getClientsById($ticket->client_id);
+                                        $assigned = $userRepo->getClientsById($ticket->assigned_id);
 
                                         $statusClass = match($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge' };
                                         $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => '' };
@@ -226,7 +220,7 @@ $allUsers = $userRepo->findAll();
                                             <td>
                                                 <div class="flex-center-y gap-sm">
                                                     <div
-                                                        class="user-avatar small <?= $client->avatarColor ?>">
+                                                        class="user-avatar small <?= $client->avatar_color ?>">
                                                         <?= $client ? $client->getInitials() : '?' ?></div>
                                                     <span
                                                         class="text-sm line-text"><?= $client->company ?></span>
@@ -235,7 +229,7 @@ $allUsers = $userRepo->findAll();
                                             <td>
                                                 <div class="flex-center-y gap-sm">
                                                     <div
-                                                        class="user-avatar small <?= $assigned->avatarColor ?>">
+                                                        class="user-avatar small <?= $assigned->avatar_color ?>">
                                                         <?= $assigned->getInitials() ?></div>
                                                     <span
                                                         class="text-sm line-text"><?= $assigned->getFullName() ?></span>

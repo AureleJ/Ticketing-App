@@ -22,9 +22,9 @@
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php" class="active"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>

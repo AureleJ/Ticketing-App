@@ -9,7 +9,7 @@ class ClientEntity extends Entity
     public string $email;
     public string $phone;
     public string $status;       
-    public string $avatarColor;   
+    public string $avatar_color;   
 
     public function __construct(array $data)
     {
@@ -19,7 +19,7 @@ class ClientEntity extends Entity
         $this->email = $data['email'] ?? '';
         $this->phone = $data['phone'] ?? '';
         $this->status = $data['status'] ?? 'Active';
-        $this->avatarColor = $data['avatarColor'] ?? 'blue';
+        $this->avatar_color = $data['avatar_color'] ?? 'blue';
     }
 
     public function getInitials(): string
@@ -29,8 +29,8 @@ class ClientEntity extends Entity
 
     public function getAvatarColor(): string
     {
-        if (!empty($this->avatarColor)) {
-            return $this->avatarColor;
+        if (!empty($this->avatar_color)) {
+            return $this->avatar_color;
         }
 
         $colors = ['blue', 'yellow', 'green', 'red', 'purple', 'cyan'];

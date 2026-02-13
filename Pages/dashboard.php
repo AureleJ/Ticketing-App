@@ -9,6 +9,8 @@ require_once __DIR__ . '/../Form/ProjectForm.php';
 require_once __DIR__ . '/../Form/ClientForm.php';
 require_once __DIR__ . '/../Utils/Debug.php';
 
+$debug = new Debug();
+
 $ticketRepo = new TicketRepository();
 $projectRepo = new ProjectRepository();
 $clientRepo = new ClientRepository();
@@ -19,24 +21,30 @@ $authUser = AuthService::getAuthUser();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     if (isset($_POST['form_type']) && $_POST['form_type'] === 'ticket') {
         $form = new TicketForm($_POST);
-        $ticketRepo->create($form->formatData());
+        $ticketRepo->createTicket($form->formatData());
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     } elseif (isset($_POST['form_type']) && $_POST['form_type'] === 'project') {
         $form = new ProjectForm($_POST);
-        $projectRepo->create($form->formatData());
+        $projectRepo->createProject($form->formatData());
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     } elseif (isset($_POST['form_type']) && $_POST['form_type'] === 'client') {
         $form = new ClientForm($_POST);
-        $clientRepo->create($form->formatData());
+        $clientRepo->createClient($form->formatData());
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     }
 }
 
-$allProjectsList = $projectRepo->findAll();
-$allClientsList = $clientRepo->findAll();
-$allUsersList = $userRepo->findAll();
-$allTickets = $ticketRepo->findAll();
+$allProjects = $projectRepo->getAllProjects();
+$allClients = $clientRepo->getAllClients();
+$allTickets = $ticketRepo->getAllTickets();
+$allUsers = $userRepo->getAllUser();
 
-$tickets = array_slice($ticketRepo->findAll(), 0, 5);
-$projects = array_slice($projectRepo->findAll(), 0, 5);
-$clients = array_slice($clientRepo->findAll(), 0, 3);
+$tickets = array_slice($allTickets, 0, 5);
+$projects = array_slice($allProjects, 0, 5);
+$clients = array_slice($allClients, 0, 3);
 
 $stats = [
     'inProgress' => count(array_filter($allTickets, fn($t) => $t->status === 'En cours')),
@@ -59,16 +67,13 @@ $stats = [
 
 <body>
     <div class="app-container">
-
         <div class="popup-overlay hidden" id="ticket-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
-                    <h3 class="text-lg font-semibold">Nouveau Ticket</h3>
-                    <button type="button" class="btn-icon" onclick="togglePopup('ticket-popup')"><i
+                    <h3>Nouveau Ticket</h3><button class="btn-icon" onclick="togglePopup('ticket-popup')"><i
                             class="ph-bold ph-x"></i></button>
                 </div>
-                <form method="POST">
-                    <input type="hidden" name="form_type" value="ticket">
+                <form id="ticket-form" method="POST">
                     <div class="popup-body">
                         <div class="input-group mb-md">
                             <i class="ph ph-text-t"></i>
@@ -78,17 +83,8 @@ $stats = [
                             <i class="ph ph-folder-notch"></i>
                             <select name="project_id" required>
                                 <option value="" disabled selected>Projet</option>
-                                <?php foreach ($allProjectsList as $p): ?>
+                                <?php foreach ($allProjects as $p): ?>
                                     <option value="<?= $p->id ?>"><?= $p->name ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="input-group mb-md">
-                            <i class="ph ph-users"></i>
-                            <select name="client_id" required>
-                                <option value="" disabled selected>Client</option>
-                                <?php foreach ($allClientsList as $c): ?>
-                                    <option value="<?= $c->id ?>"><?= $c->company ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -96,7 +92,7 @@ $stats = [
                             <i class="ph ph-user"></i>
                             <select name="assigned_id">
                                 <option value="0" selected>Non assigné</option>
-                                <?php foreach ($allUsersList as $u): ?>
+                                <?php foreach ($allUsers as $u): ?>
                                     <option value="<?= $u->id ?>"><?= $u->getFullName() ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -118,10 +114,9 @@ $stats = [
                                 </select>
                             </div>
                         </div>
-                        <div class="input-group mb-md">
+                        <div class="input-group textarea-group">
                             <i class="ph ph-article"></i>
-                            <textarea name="description" placeholder="Description détaillée..." rows="3"
-                                required></textarea>
+                            <textarea name="description" placeholder="Description détaillée..." rows="4"></textarea>
                         </div>
                     </div>
                     <div class="popup-footer">
@@ -208,9 +203,9 @@ $stats = [
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php" class="active"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
@@ -301,8 +296,8 @@ $stats = [
                             </thead>
                             <tbody>
                                 <?php foreach ($tickets as $ticket):
-                                    $client = $clientRepo->findById($ticket->client_id);
-                                    $assigned = $userRepo->findById($ticket->assigned_id);
+                                    $client = $clientRepo->getClientsById($ticket->client_id);
+                                    $assigned = $userRepo->getClientsById($ticket->assigned_id);
 
                                     $statusClass = match ($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge'};
                                     $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => ''};
@@ -330,8 +325,11 @@ $stats = [
                                                 <span class="text-sm line-text"><?= $assigned->getFullName() ?></span>
                                             </div>
                                         </td>
-                                        <td><span class="text-sm line-text"><?= date('d/m', strtotime($ticket->date)) ?></span></td>
-                                        <td><span class="badge line-text <?= $statusClass ?>"><?= $ticket->status ?></span></td>
+                                        <td><span
+                                                class="text-sm line-text"><?= date('d/m', strtotime($ticket->date)) ?></span>
+                                        </td>
+                                        <td><span class="badge line-text <?= $statusClass ?>"><?= $ticket->status ?></span>
+                                        </td>
                                         <td><span class="badge line-text <?= $typeClass ?>"><?= $ticket->type ?></span></td>
                                         <td class="font-bold text-sm <?= $priorityClass ?>"><?= $ticket->priority ?></td>
                                         <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
@@ -359,7 +357,7 @@ $stats = [
                             </thead>
                             <tbody>
                                 <?php foreach ($projects as $project):
-                                    $client = $clientRepo->findById($project->client_id);
+                                    $client = $clientRepo->getClientsById($project->client_id);
                                     $progressColor = $project->progress == 100 ? 'var(--success-color)' : 'var(--accent-color)';
                                     ?>
                                     <tr onclick="window.location='project-details.php?id=<?= $project->id ?>'">
@@ -403,7 +401,7 @@ $stats = [
                     </div>
                     <div class="clients-grid animate-item delay-2" id="clients-grid">
                         <?php foreach ($clients as $client): ?>
-                            <a class="glass-panel client-card" href="client-details.php?id=<?= $client->id ?>">
+                            <a class="glass-panel client-card" href="clients-details.php?id=<?= $client->id ?>">
                                 <div class="client-header">
                                     <div class="user-avatar large <?= $client->getAvatarColor() ?>">
                                         <?= $client->getInitials() ?>

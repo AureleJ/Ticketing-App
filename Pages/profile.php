@@ -26,15 +26,15 @@ $user = AuthService::getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php" class="active"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $user->avatarColor ?>"><?= $user->getInitials() ?></div>
+                    <div class="user-avatar <?= $user->avatar_color ?>"><?= $user->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $user->getFullName() ?></div>
                         <div class="user-role"><?= $user->role ?></div>
@@ -49,7 +49,7 @@ $user = AuthService::getAuthUser();
 
                 <div class="glass-panel pannel animate-item">
                     <div class="flex-row gap-lg flex-center-y">
-                        <div class="user-avatar large <?= $user->avatarColor ?>"
+                        <div class="user-avatar large <?= $user->avatar_color ?>"
                             style="width: 80px; height: 80px; font-size: 2rem;">
                             <?= $user->getInitials() ?>
                         </div>

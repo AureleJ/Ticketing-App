@@ -1,3 +1,14 @@
+<?php 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $clientIdToDelete = (int) $_POST['id'];
+    $clientRepo->deleteClient($clientIdToDelete);
+    header('Location: clients.php');
+    exit;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,10 +25,10 @@
                 <h1 class="text-logo">Ticketing.</h1>
                 <p class="text-muted">Connectez-vous à votre espace.</p>
             </div>
-            <form action="Pages/dashboard.php">
+            <form action="Pages/dashboard.php" method="POST">
                 <div class="input-group mb-md">
-                    <i class="ph ph-envelope-simple"></i>
-                    <input type="email" placeholder="Email professionnel" required>
+                    <i class="ph ph-user"></i>
+                    <input type="name" placeholder="Nom d'utilisateur" required>
                 </div>
                 <div class="input-group mb-lg">
                     <i class="ph ph-lock-key"></i>
@@ -32,5 +43,7 @@
             </div>
         </div>
     </main>
+
+    <script src="./assets/js/script.js"></script>
 </body>
 </html>

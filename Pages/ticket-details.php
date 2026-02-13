@@ -4,6 +4,9 @@ require_once __DIR__ . '/../Repository/ProjectRepository.php';
 require_once __DIR__ . '/../Repository/ClientRepository.php';
 require_once __DIR__ . '/../Repository/UserRepository.php';
 require_once __DIR__ . '/../Service/AuthService.php';
+require_once __DIR__ . '/../Utils/Debug.php';
+
+$debug = new Debug();
 
 $ticketRepo = new TicketRepository();
 $projectRepo = new ProjectRepository();
@@ -12,11 +15,18 @@ $userRepo = new UserRepository();
 
 $id = $_GET['id'];
 
-$ticket = $ticketRepo->findById((int)$id);
+$ticket = $ticketRepo->getTicketsById($id);
 
-$project = $projectRepo->findById($ticket->project_id);
-$client = $clientRepo->findById($ticket->client_id);
-$assigned = $userRepo->findById($ticket->assigned_id);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $ticketIdToDelete = (int) $_POST['id'];
+    $ticketRepo->deleteTicket($ticketIdToDelete);
+    header('Location: tickets.php');
+    exit;
+}
+
+$project = $projectRepo->getProjectsById($ticket->project_id);
+$client = $clientRepo->getClientsById($ticket->client_id);
+$assigned = $userRepo->getClientsById($ticket->assigned_id);
 
 $authUser = AuthService::getAuthUser();
 
@@ -50,15 +60,15 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php" class="active"><i class="ph ph-ticket"></i> Tickets</a></li>
-                <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
                 <li><a href="settings.php"><i class="ph ph-gear"></i> Parametres</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
                         <div class="user-name"><?= $authUser->getFullName() ?></div>
                         <div class="user-role"><?= $authUser->role ?></div>
@@ -75,7 +85,13 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                     <a href="tickets.php" class="btn btn-secondary no-border"><i class="ph-bold ph-arrow-left"></i> Retour</a>
                     <div class="flex gap-sm">
                         <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> <span>Modifier</span></button>
-                        <button class="btn btn-primary"><i class="ph ph-trash-simple"></i> <span>Clôturer</span></button>
+                        <form method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir clôturer ce ticket ?');">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="<?= $ticket->id ?>">
+                            <button type="submit" class="btn btn-primary btn-danger">
+                                <i class="ph ph-trash"></i> <span>Clôturer</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -86,10 +102,7 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                             <span class="badge <?= $typeClass ?>"><?= $ticket->type ?></span>
                             <span class="text-muted text-sm flex-center-y ml-auto">Ouvert le <?= date('d/m/Y H:i', strtotime($ticket->date)) ?></span>
                         </div>
-                        <div class="flex-col gap-sm mb-xs">
-                            <span class="text-muted font-mono">#<?= $ticket->id ?></span>
-                            <h1 class="text-xl font-bold"><?= $ticket->subject ?></h1>
-                        </div>
+                        <h1 class="text-xl font-bold"><?= $ticket->subject ?></h1>
                     </div>
                 </div>
 
@@ -100,21 +113,21 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                             <p class="text-muted" style="line-height: 1.6;"><?= $ticket->description ?></p>
                         </div>
                         
-                        <div class="chat glass-panel pannel">
+                        <!-- <div class="chat glass-panel pannel">
                             <div class="discussion-feed">
                                 <div class="discussion-item">
-                                    <div class="user-avatar small <?= $client->avatarColor ?>"><?= $client->getInitials() ?></div>
+                                    <div class="user-avatar small <?= $client->avatar_color ?>"><?= $client->getInitials() ?></div>
                                     <div class="bubble">
                                         <div class="text-xs text-muted mb-xs"><?= $client->contact_name ?> - Hier</div>
-                                        Bonjour, avez-vous pu regarder le problème ? C'est assez urgent pour nous.
+                                        BlbaBlbaBlba Blba BlbaBlbaBlba BlbaBlba BlbaBlbaBlba BlbaBlba BlbaBlbaBlba Blba
                                     </div>
                                 </div>
                                 <div class="discussion-item own">
                                     <div class="bubble">
                                         <div class="text-xs text-muted mb-xs text-right">Moi - À l'instant</div>
-                                        Oui, je suis dessus actuellement. Je vous tiens au courant d'ici une heure.
+                                        BlbaBlbaBlba Blba BlbaBlbaBlba BlbaBlba BlbaBlbaBlba BlbaBlba BlbaBlbaBlba Blba
                                     </div>
-                                    <div class="user-avatar small <?= $authUser->avatarColor ?>"><?= $authUser->getInitials() ?></div>
+                                    <div class="user-avatar small <?= $authUser->avatar_color ?>"><?= $authUser->getInitials() ?></div>
                                 </div>
                             </div>
                             <div class="chat-input-area">
@@ -123,7 +136,7 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                                     <button class="btn btn-primary btn-icon"><i class="ph-bold ph-paper-plane-right"></i></button>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="flex-col gap-lg">
@@ -133,7 +146,7 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                                 <li class="flex-center-y gap-xs">
                                     <span class="text-muted">Client</span>
                                     <div class="flex-center-y gap-xs font-bold">
-                                        <div class="user-avatar small <?= $client->avatarColor ?>"><?= $client->getInitials() ?></div> <?= $client->company ?>
+                                        <div class="user-avatar small <?= $client->avatar_color ?>"><?= $client->getInitials() ?></div> <?= $client->company ?>
                                     </div>
                                 </li>
                                 <li class="flex-center-y gap-xs">
@@ -147,7 +160,7 @@ $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne'
                                 <li class="flex-center-y gap-xs">
                                     <span class="text-muted">Assigné à</span>
                                     <div class="flex-center-y gap-xs">
-                                        <div class="user-avatar small <?= $assigned->avatarColor ?>"><?= $assigned->getInitials() ?></div> <?= $assigned->getFullName() ?>
+                                        <div class="user-avatar small <?= $assigned->avatar_color ?>"><?= $assigned->getInitials() ?></div> <?= $assigned->getFullName() ?>
                                     </div>
                                 </li>
                             </ul>
