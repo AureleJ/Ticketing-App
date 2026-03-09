@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 require_once __DIR__ . '/../Repository/ProjectRepository.php';
 require_once __DIR__ . '/../Repository/UserRepository.php'; 
 require_once __DIR__ . '/../Repository/ClientRepository.php';
@@ -8,7 +15,8 @@ require_once __DIR__ . '/../Form/ProjectForm.php';
 $projectRepo = new ProjectRepository();
 $userRepo = new UserRepository();
 $clientRepo = new ClientRepository();
-$authUser = AuthService::getAuthUser();
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $form = new ProjectForm($_POST);
@@ -71,8 +79,8 @@ $allClients = $clientRepo->getAllClients();
         </div>
 
         <header class="mobile-header">
-            <div class="text-logo"><a href="../index.php">Ticketing.</a></div>
-            <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
+            <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
         </header>
 
         <nav class="sidebar glass-panel">
@@ -93,7 +101,7 @@ $allClients = $clientRepo->getAllClients();
                         <div class="user-role"><?= $authUser->role ?></div>
                     </div>
                 </div>
-                <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+                <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
             </div>
         </nav>
 

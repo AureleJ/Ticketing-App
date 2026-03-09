@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 require_once __DIR__ . '/../Repository/ProjectRepository.php';
 require_once __DIR__ . '/../Repository/TicketRepository.php';
 require_once __DIR__ . '/../Repository/UserRepository.php';
@@ -37,7 +44,8 @@ $statusClass = match ($project->status) {
     'En cours' => 'badge-active', 'En attente' => 'badge-waiting', 'Terminé' => 'badge', default => 'badge-outline'
 };
 
-$authUser = AuthService::getAuthUser();
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
 ?>
 
 <!DOCTYPE html>
@@ -73,8 +81,8 @@ $authUser = AuthService::getAuthUser();
         </div>
 
         <header class="mobile-header">
-            <div class="text-logo"><a href="../index.php">Ticketing.</a></div>
-            <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
+            <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
         </header>
 
         <nav class="sidebar glass-panel">
@@ -95,7 +103,7 @@ $authUser = AuthService::getAuthUser();
                         <div class="user-role"><?= $authUser->role ?></div>
                     </div>
                 </div>
-                <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+                <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
             </div>
         </nav>
 

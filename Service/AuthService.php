@@ -6,7 +6,7 @@ require_once __DIR__ . '/../Service/DatabaseService.php';
 class AuthService
 {
     private $db;
-    private $tableName = 'clients';
+    private $tableName = 'users';
 
     public function __construct()
     {
@@ -14,28 +14,32 @@ class AuthService
         $this->db = $service->connect();
     }
 
-    private const MOCK_LOGGED_ID = 1; 
-
-    public static function getAuthUser(): UserEntity
+    public function getAuthUser(): UserEntity
     {
-        $userRepo = new UserRepository();
-        $user = $userRepo->getClientsById(self::MOCK_LOGGED_ID);
-
-        if (!$user) {
-            return new UserEntity([
-                'id' => 0,
-                'firstname' => 'Invité', 
-                'lastname' => '', 
-                'role' => 'Guest',
-                'avatar_color' => 'gray'
-            ]);
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            return new UserEntity([]);
         }
 
-        return $user;
+        $userRepo = new UserRepository();
+        return $userRepo->getUserById($_SESSION['user_id']);
     }
 
-    public static function isOwner(int $userId): bool 
+    public function login($username, $password)
     {
-        return self::MOCK_LOGGED_ID === $userId;
+        $userRepo = new UserRepository();
+        $user = $userRepo->getUserByUsername($username);
+
+        if ($user && password_verify($password, $user->password_hash)) {
+            $_SESSION['user_id'] = $user->id;
+            return true;
+        }
+
+        return false;
+    }
+
+    public function logout()
+    {
+        session_destroy();
     }
 }

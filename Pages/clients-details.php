@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 require_once __DIR__ . '/../Repository/ClientRepository.php';
 require_once __DIR__ . '/../Repository/ProjectRepository.php';
 require_once __DIR__ . '/../Repository/TicketRepository.php';
@@ -27,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $clientProjects = $projectRepo->getClientProjects($client->id);
 $clientTickets = $ticketRepo->findClientTicket($client->id);
 
-$authUser = AuthService::getAuthUser();
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
 ?>
 
 <!DOCTYPE html>
@@ -44,8 +52,8 @@ $authUser = AuthService::getAuthUser();
 <body>
     <div class="app-container">
         <header class="mobile-header">
-            <div class="text-logo"><a href="../index.php">Ticketing.</a></div>
-            <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
+            <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
         </header>
 
         <nav class="sidebar glass-panel">
@@ -66,7 +74,7 @@ $authUser = AuthService::getAuthUser();
                         <div class="user-role"><?= $authUser->role ?></div>
                     </div>
                 </div>
-                <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+                <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
             </div>
         </nav>
 

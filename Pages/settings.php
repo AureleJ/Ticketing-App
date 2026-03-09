@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
+require_once __DIR__ . '/../Service/AuthService.php';
+
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,7 +28,7 @@
                 <a href="dashboard.php">Ticketing.</a>
             </div>
 
-            <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+            <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
         </header>
         
         <nav class="sidebar glass-panel">
@@ -30,13 +43,13 @@
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar">AJ</div>
+                    <div class="user-avatar <?= $authUser->getAvatarColor() ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
-                        <div class="user-name">Aurele Joblet</div>
-                        <div class="user-role">Developpeur</div>
+                        <div class="user-name"><?= $authUser->getFullName() ?></div>
+                        <div class="user-role"><?= $authUser->role ?></div>
                     </div>
                 </div>
-                <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+                <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
             </div>
         </nav>
 

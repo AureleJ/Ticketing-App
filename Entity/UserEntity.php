@@ -6,6 +6,7 @@ class UserEntity extends Entity
     public int $id;
     public string $firstname;
     public string $lastname;
+    public string $password_hash;
     public string $email;
     public string $role;
     public string $status;
@@ -16,6 +17,7 @@ class UserEntity extends Entity
         $this->id = (int) ($data['id'] ?? 0);
         $this->firstname = $data['firstname'] ?? '';
         $this->lastname = $data['lastname'] ?? '';
+        $this->password_hash = $data['password_hash'] ?? '';
         $this->email = $data['email'] ?? '';
         $this->role = $data['role'] ?? 'User';
         $this->status = $data['status'] ?? 'Active';

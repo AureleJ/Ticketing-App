@@ -1,16 +1,36 @@
-<?php 
+<?php
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $clientIdToDelete = (int) $_POST['id'];
-    $clientRepo->deleteClient($clientIdToDelete);
-    header('Location: clients.php');
+if (isset($_SESSION["user_id"]) && $_SESSION["user_id"] > 0) {
+    echo"<h2 style='color:green'>Vous êtes déjà connecté ! Redirection en cours...</h2>";
+    echo"User ID: " . $_SESSION["user_id"];
+
+    header('Location: Pages/dashboard.php');
     exit;
+}
+
+require_once __DIR__ . '/./Service/AuthService.php';
+
+if (isset($_POST['form_type']) && $_POST['form_type'] === 'login') {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    $authService = new AuthService();
+
+    if ($authService->login($username, $password)) {
+        echo "<h2 style='color:green'>Connexion réussie ! Redirection en cours...</h2>";
+        header('Location: Pages/dashboard.php');
+        exit;
+    } else {
+        echo "<h2 style='color:red'>Nom d'utilisateur ou mot de passe incorrect.</h2>";
+    }
 }
 
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body>
     <main class="login-wrapper">
         <div class="login-card glass-panel animate-item">
@@ -25,14 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <h1 class="text-logo">Ticketing.</h1>
                 <p class="text-muted">Connectez-vous à votre espace.</p>
             </div>
-            <form action="Pages/dashboard.php" method="POST">
+            <form method="POST">
+                <input type="hidden" name="form_type" value="login">
                 <div class="input-group mb-md">
                     <i class="ph ph-user"></i>
-                    <input type="name" placeholder="Nom d'utilisateur" required>
+                    <input type="name" name="username" placeholder="Nom d'utilisateur" required>
                 </div>
                 <div class="input-group mb-lg">
                     <i class="ph ph-lock-key"></i>
-                    <input type="password" placeholder="Mot de passe" required>
+                    <input type="password" name="password" placeholder="Mot de passe" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-full flex-center p-md mt-md">
                     Se connecter <i class="ph-bold ph-arrow-right"></i>
@@ -46,4 +68,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <script src="./assets/js/script.js"></script>
 </body>
+
 </html>

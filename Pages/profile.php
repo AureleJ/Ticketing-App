@@ -1,7 +1,15 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 require_once __DIR__ . '/../Service/AuthService.php';
 
-$user = AuthService::getAuthUser();
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
 ?>
 
 <!DOCTYPE html>
@@ -34,13 +42,13 @@ $user = AuthService::getAuthUser();
             </ul>
             <div class="sidebar-footer">
                 <div class="user-infos">
-                    <div class="user-avatar <?= $user->avatar_color ?>"><?= $user->getInitials() ?></div>
+                    <div class="user-avatar <?= $authUser->getAvatarColor() ?>"><?= $authUser->getInitials() ?></div>
                     <div class="user-info">
-                        <div class="user-name"><?= $user->getFullName() ?></div>
-                        <div class="user-role"><?= $user->role ?></div>
+                        <div class="user-name"><?= $authUser->getFullName() ?></div>
+                        <div class="user-role"><?= $authUser->role ?></div>
                     </div>
                 </div>
-                <a href="../index.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
+                <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
             </div>
         </nav>
 
@@ -49,13 +57,13 @@ $user = AuthService::getAuthUser();
 
                 <div class="glass-panel pannel animate-item">
                     <div class="flex-row gap-lg flex-center-y">
-                        <div class="user-avatar large <?= $user->avatar_color ?>"
+                        <div class="user-avatar large <?= $authUser->getAvatarColor() ?>"
                             style="width: 80px; height: 80px; font-size: 2rem;">
-                            <?= $user->getInitials() ?>
+                            <?= $authUser->getInitials() ?>
                         </div>
                         <div>
-                            <h1 class="text-xl font-bold"><?= $user->getFullName() ?></h1>
-                            <div class="text-muted"><?= $user->role ?> • <?= $user->status ?></div>
+                            <h1 class="text-xl font-bold"><?= $authUser->getFullName() ?></h1>
+                            <div class="text-muted"><?= $authUser->role ?> • <?= $authUser->status ?></div>
                         </div>
                     </div>
                 </div>
@@ -66,20 +74,20 @@ $user = AuthService::getAuthUser();
                         <div class="flex gap-md">
                             <div class="input-group w-full">
                                 <label class="text-xs text-muted mb-xs block">Prénom</label>
-                                <input type="text" value="<?= $user->firstname ?>">
+                                <input type="text" value="<?= $authUser->firstname ?>">
                             </div>
                             <div class="input-group w-full">
                                 <label class="text-xs text-muted mb-xs block">Nom</label>
-                                <input type="text" value="<?= $user->lastname ?>">
+                                <input type="text" value="<?= $authUser->lastname ?>">
                             </div>
                         </div>
                         <div class="input-group">
                             <label class="text-xs text-muted mb-xs block">Email professionnel</label>
-                            <input type="email" value="<?= $user->email ?>">
+                            <input type="email" value="<?= $authUser->email ?>">
                         </div>
                         <div class="input-group">
                             <label class="text-xs text-muted mb-xs block">Rôle</label>
-                            <input type="text" value="<?= $user->role ?>" disabled style="opacity: 0.5;">
+                            <input type="text" value="<?= $authUser->role ?>" disabled style="opacity: 0.5;">
                         </div>
                         <div class="flex justify-end mt-sm">
                             <button class="btn btn-primary"
