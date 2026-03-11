@@ -2,9 +2,6 @@
 session_start();
 
 if (isset($_SESSION["user_id"]) && $_SESSION["user_id"] > 0) {
-    echo"<h2 style='color:green'>Vous êtes déjà connecté ! Redirection en cours...</h2>";
-    echo"User ID: " . $_SESSION["user_id"];
-
     header('Location: Pages/dashboard.php');
     exit;
 }
@@ -15,10 +12,7 @@ if (isset($_POST['form_type']) && $_POST['form_type'] === 'login') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    $authService = new AuthService();
-
-    if ($authService->login($username, $password)) {
-        echo "<h2 style='color:green'>Connexion réussie ! Redirection en cours...</h2>";
+    if (AuthService::login($username, $password)) {
         header('Location: Pages/dashboard.php');
         exit;
     } else {
@@ -62,6 +56,8 @@ if (isset($_POST['form_type']) && $_POST['form_type'] === 'login') {
             </form>
             <div>
                 <a href="Pages/password-lost.php" class="text-muted text-sm">Mot de passe oublié ?</a>
+                <span class="text-muted mx-1">|</span>
+                <a href="Pages/signup.php" class="text-muted text-sm">Créer un compte</a>
             </div>
         </div>
     </main>
