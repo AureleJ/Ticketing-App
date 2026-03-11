@@ -23,7 +23,7 @@ class TicketEntity extends Entity
         $this->assigned_id = (int) ($data['assigned_id'] ?? 0);
         $this->date = $data['date'] ?? '';
         $this->status = $data['status'] ?? 'Non traité';
-        $this->priority = $data['priority'] ?? 'low';
+        $this->priority = $data['priority'] ?? 'Basse';
         $this->type = $data['type'] ?? 'Inclus';
         $this->description = $data['description'] ?? '';
     }

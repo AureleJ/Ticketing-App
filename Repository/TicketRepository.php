@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../Entity/TicketEntity.php';
 require_once __DIR__ . '/../Service/AuthService.php';
+require_once __DIR__ . '/../Service/DatabaseService.php';
 require_once __DIR__ . '/../Utils/Debug.php';
 
 class TicketRepository
@@ -16,8 +17,26 @@ class TicketRepository
     public function getAllTickets(array $filters = []): array
     {
         try {
-            $query = "SELECT * FROM $this->tableName";
-            $stmt = $this->db->query($query);
+            $authService = new AuthService();
+            $currentUser = $authService->getAuthUser();
+
+            $params = [];
+
+            if ($currentUser->type === 'Client') {
+                $query = "SELECT * FROM $this->tableName WHERE client_id = :client_id";
+                $params[':client_id'] = $currentUser->client_id;
+            } elseif ($currentUser->type === 'Admin') {
+                $query = "SELECT * FROM $this->tableName";
+            } else {
+                $query = "SELECT DISTINCT t.* FROM $this->tableName t
+                    LEFT JOIN project_members pm ON t.project_id = pm.project_id
+                    WHERE t.assigned_id = :user_id OR pm.user_id = :user_id2";
+                $params[':user_id'] = $currentUser->id;
+                $params[':user_id2'] = $currentUser->id;
+            }
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute($params);
             $data = $stmt->fetchAll();
             $tickets = array_map(fn($item) => new TicketEntity($item), $data);
 
@@ -30,16 +49,30 @@ class TicketRepository
                 $tickets = array_filter($tickets, fn($t) => $t->status === $filters['status']);
             }
 
+            if (!empty($filters['priority']) && $filters['priority'] !== 'all') {
+                $tickets = array_filter($tickets, fn($t) => $t->priority === $filters['priority']);
+            }
+
+            if (!empty($filters['type']) && $filters['type'] !== 'all') {
+                $tickets = array_filter($tickets, fn($t) => $t->type === $filters['type']);
+            }
+
             if (!empty($filters['tab'])) {
                 if ($filters['tab'] === 'mine') {
-                    $currentUser = AuthService::getAuthUser();
                     $tickets = array_filter($tickets, fn($t) => $t->assigned_id === $currentUser->id);
                 } elseif ($filters['tab'] === 'finished') {
                     $tickets = array_filter($tickets, fn($t) => $t->status === 'Terminé');
                 }
             }
 
-            usort($tickets, fn($a, $b) => strtotime($b->date) - strtotime($a->date));
+            $sortBy = $filters['sort'] ?? 'recent';
+            usort($tickets, function ($a, $b) use ($sortBy) {
+                if ($sortBy === 'priority') {
+                    $priorities = ['Haute' => 3, 'Moyenne' => 2, 'Basse' => 1];
+                    return ($priorities[$b->priority] ?? 0) - ($priorities[$a->priority] ?? 0);
+                }
+                return strtotime($b->date) - strtotime($a->date);
+            });
 
             return $tickets;
         } catch (PDOException $e) {
@@ -88,6 +121,39 @@ class TicketRepository
         }
     }
 
+    public function editTicket(int $id, array $params)
+    {
+        try {
+            $query = "UPDATE $this->tableName SET subject = :subject, description = :description, project_id = :project_id, assigned_id = :assigned_id, status = :status, priority = :priority, type = :type WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":id" => $id,
+                ":subject" => $params["subject"],
+                ":description" => $params["description"],
+                ":project_id" => $params["project_id"],
+                ":assigned_id" => $params["assigned_id"],
+                ":status" => $params["status"],
+                ":priority" => $params["priority"],
+                ":type" => $params["type"],
+            ]);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+        }
+    }
+
+    public function closeTicket(int $id)
+    {
+        try {
+            $query = "UPDATE $this->tableName SET status = 'Terminé' WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([":id" => $id]);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+        }
+    }
+
     public function getTicketsById($id)
     {
         try {
@@ -97,6 +163,9 @@ class TicketRepository
                 ":id" => $id
             ]);
             $data = $stmt->fetch();
+            if (!$data) {
+                return new TicketEntity([]);
+            }
             return new TicketEntity($data);
         } catch (PDOException $e) {
             echo "<h2 style='color:red'> Erreur SQL :</h2>";

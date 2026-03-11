@@ -13,7 +13,7 @@ class TicketForm extends FormService
             "assigned_id" => $this->inputInt("assigned_id"),
             "date"        => date('Y-m-d H:i:s'),
             "status"      => "Non traité", 
-            "priority"    => $this->input("priority", "low"),
+            "priority"    => $this->input("priority", "Basse"),
             "type"        => $this->input("type", "Inclus")
         ];
     }

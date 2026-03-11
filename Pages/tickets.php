@@ -21,7 +21,7 @@ $projectRepo = new ProjectRepository();
 $authService = new AuthService();
 $authUser = $authService->getAuthUser();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) && $authUser->type !== 'Client') {
     $form = new TicketForm($_POST);
     $newTicket = $form->formatData();
     $ticketRepo->createTicket($newTicket);
@@ -33,6 +33,9 @@ $filters = [
     'tab' => $_GET['tab'] ?? 'all',
     'search' => $_GET['search'] ?? '',
     'status' => $_GET['status'] ?? 'all',
+    'priority' => $_GET['priority'] ?? 'all',
+    'type' => $_GET['type'] ?? 'all',
+    'sort' => $_GET['sort'] ?? 'recent',
 ];
 
 $allTickets = $ticketRepo->getAllTickets($filters);
@@ -54,6 +57,7 @@ $allUsers = $userRepo->getAllUser();
 
 <body>
     <div class="app-container">
+        <?php if ($authUser->type !== 'Client'): ?>
         <div class="popup-overlay hidden" id="ticket-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
@@ -114,6 +118,7 @@ $allUsers = $userRepo->getAllUser();
                 </form>
             </div>
         </div>
+        <?php endif; ?>
 
         <header class="mobile-header">
             <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
@@ -124,7 +129,9 @@ $allUsers = $userRepo->getAllUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php" class="active"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
@@ -143,8 +150,10 @@ $allUsers = $userRepo->getAllUser();
         </nav>
 
         <main class="main-content">
+            <?php if ($authUser->type !== 'Client'): ?>
             <button class="btn btn-primary btn-floating" onclick="togglePopup('ticket-popup')"><i
                     class="ph-bold ph-plus"></i> <span>Nouveau</span></button>
+            <?php endif; ?>
 
             <div class="content-scroll">
                 <div class="top-bar glass-panel animate-item">
@@ -175,16 +184,38 @@ $allUsers = $userRepo->getAllUser();
                             <div class="input-group" style="width: 160px;">
                                 <i class="ph ph-funnel"></i>
                                 <select name="status" onchange="this.form.submit()">
-                                    <option value="all" <?= $filters['status'] === 'all' ? 'selected' : '' ?>>Tout</option>
-                                    <option value="En cours" <?= $filters['status'] === 'En cours' ? 'selected' : '' ?>>En
-                                        cours</option>
+                                    <option value="all" <?= $filters['status'] === 'all' ? 'selected' : '' ?>>Statut: Tout</option>
                                     <option value="Non traité" <?= $filters['status'] === 'Non traité' ? 'selected' : '' ?>>Non traité</option>
+                                    <option value="En attente" <?= $filters['status'] === 'En attente' ? 'selected' : '' ?>>En attente</option>
+                                    <option value="En cours" <?= $filters['status'] === 'En cours' ? 'selected' : '' ?>>En cours</option>
+                                    <option value="Terminé" <?= $filters['status'] === 'Terminé' ? 'selected' : '' ?>>Terminé</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="width: 160px;">
+                                <i class="ph ph-warning-circle"></i>
+                                <select name="priority" onchange="this.form.submit()">
+                                    <option value="all" <?= $filters['priority'] === 'all' ? 'selected' : '' ?>>Priorité: Tout</option>
+                                    <option value="Haute" <?= $filters['priority'] === 'Haute' ? 'selected' : '' ?>>Haute</option>
+                                    <option value="Moyenne" <?= $filters['priority'] === 'Moyenne' ? 'selected' : '' ?>>Moyenne</option>
+                                    <option value="Basse" <?= $filters['priority'] === 'Basse' ? 'selected' : '' ?>>Basse</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="width: 160px;">
+                                <i class="ph ph-tag"></i>
+                                <select name="type" onchange="this.form.submit()">
+                                    <option value="all" <?= $filters['type'] === 'all' ? 'selected' : '' ?>>Type: Tout</option>
+                                    <option value="Inclus" <?= $filters['type'] === 'Inclus' ? 'selected' : '' ?>>Inclus</option>
+                                    <option value="Facturable" <?= $filters['type'] === 'Facturable' ? 'selected' : '' ?>>Facturable</option>
                                 </select>
                             </div>
                             <div class="input-group" style="width: 160px;">
                                 <i class="ph ph-sort-ascending"></i>
-                                <button type="submit" class="btn btn-secondary w-full">Filtrer</button>
+                                <select name="sort" onchange="this.form.submit()">
+                                    <option value="recent" <?= $filters['sort'] === 'recent' ? 'selected' : '' ?>>Récent</option>
+                                    <option value="priority" <?= $filters['sort'] === 'priority' ? 'selected' : '' ?>>Priorité</option>
+                                </select>
                             </div>
+                            <button type="submit" class="btn btn-secondary">Filtrer</button>
                         </div>
                     </form>
                 </div>
@@ -213,7 +244,7 @@ $allUsers = $userRepo->getAllUser();
                                 <?php else: ?>
                                     <?php foreach ($allTickets as $ticket):
                                         $client = $clientRepo->getClientsById($ticket->client_id);
-                                        $assigned = $userRepo->getClientsById($ticket->assigned_id);
+                                        $assigned = $userRepo->getUserById($ticket->assigned_id);
 
                                         $statusClass = match($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge' };
                                         $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => '' };
