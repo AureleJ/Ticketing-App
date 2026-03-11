@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../Entity/ProjectEntity.php';
 require_once __DIR__ . '/../Service/AuthService.php';
+require_once __DIR__ . '/../Service/DatabaseService.php';
 
 class ProjectRepository
 {
@@ -16,8 +17,26 @@ class ProjectRepository
     public function getAllProjects(array $filters = [])
     {
         try {
-            $query = "SELECT * FROM $this->tableName";
-            $stmt = $this->db->query($query);
+            $authService = new AuthService();
+            $currentUser = $authService->getAuthUser();
+
+            $params = [];
+
+            if ($currentUser->type === 'Client') {
+                $query = "SELECT * FROM $this->tableName WHERE client_id = :client_id";
+                $params[':client_id'] = $currentUser->client_id;
+            } elseif ($currentUser->type === 'Admin') {
+                $query = "SELECT * FROM $this->tableName";
+            } else {
+                $query = "SELECT DISTINCT p.* FROM $this->tableName p
+                    LEFT JOIN project_members pm ON p.id = pm.project_id
+                    WHERE p.owner_id = :user_id OR pm.user_id = :user_id2";
+                $params[':user_id'] = $currentUser->id;
+                $params[':user_id2'] = $currentUser->id;
+            }
+
+            $stmt = $this->db->prepare($query);
+            $stmt->execute($params);
             $data = $stmt->fetchAll();
             $projects = array_map(fn($item) => new ProjectEntity($item), $data);
 
@@ -30,19 +49,27 @@ class ProjectRepository
                 $projects = array_filter($projects, fn($p) => $p->status === $filters['status']);
             }
 
+            if (!empty($filters['priority']) && $filters['priority'] !== 'all') {
+                $projects = array_filter($projects, fn($p) => $p->priority === $filters['priority']);
+            }
+
+            if (!empty($filters['client_id']) && $filters['client_id'] !== 'all') {
+                $cid = (int) $filters['client_id'];
+                $projects = array_filter($projects, fn($p) => $p->client_id === $cid);
+            }
+
             if (!empty($filters['tab'])) {
                 if ($filters['tab'] === 'mine') {
-                    $currentUser = AuthService::getAuthUser();
                     $projects = array_filter($projects, fn($p) => $p->owner_id === $currentUser->id);
                 } elseif ($filters['tab'] === 'finished') {
                     $projects = array_filter($projects, fn($p) => $p->status === 'Terminé');
                 }
             }
 
-            $sortBy = $filters['sort'];
+            $sortBy = $filters['sort'] ?? 'recent';
             usort($projects, function ($a, $b) use ($sortBy) {
                 if ($sortBy === 'priority') {
-                    $priorities = ['High' => 3, 'Medium' => 2, 'Low' => 1];
+                    $priorities = ['Haute' => 3, 'Moyenne' => 2, 'Basse' => 1];
                     return ($priorities[$b->priority] ?? 0) - ($priorities[$a->priority] ?? 0);
                 }
 
@@ -84,12 +111,15 @@ class ProjectRepository
     {
         try {
             $ticketRepo = new TicketRepository();
-            $clientTickets = $ticketRepo->findClientTicket($id);
+            $projectTickets = $ticketRepo->findProjectTicket($id);
 
-            foreach ($clientTickets as $clientTicket) {
-                $ticketRepo->deleteTicket($clientTicket->id);
+            foreach ($projectTickets as $projectTicket) {
+                $ticketRepo->deleteTicket($projectTicket->id);
             }
             
+            $stmt = $this->db->prepare("DELETE FROM project_members WHERE project_id = :id");
+            $stmt->execute([":id" => $id]);
+
             $query = "DELETE FROM $this->tableName WHERE id = :id";
             $stmt = $this->db->prepare($query);
             $stmt->execute([
@@ -98,6 +128,28 @@ class ProjectRepository
         } catch (PDOException $e) {
             echo "<h2 style='color:red'> Erreur SQL :</h2>";
             echo "<pre>" . $e->getMessage() . "</pre>";
+        }
+    }
+
+    public function editProject(int $id, array $params)
+    {
+        try {
+            $query = "UPDATE $this->tableName SET name = :name, description = :description, client_id = :client_id, status = :status, priority = :priority, progress = :progress, budget_h = :budget_h, total_h = :total_h WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":id" => $id,
+                ":name" => $params["name"],
+                ":description" => $params["description"],
+                ":client_id" => $params["client_id"],
+                ":status" => $params["status"],
+                ":priority" => $params["priority"],
+                ":progress" => $params["progress"],
+                ":budget_h" => $params["budget_h"],
+                ":total_h" => $params["total_h"],
+            ]);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
         }
     }
 
@@ -110,6 +162,16 @@ class ProjectRepository
                 ":id" => $id
             ]);
             $data = $stmt->fetch();
+
+            if (!$data) {
+                return new ProjectEntity([]);
+            }
+
+            $memberQuery = "SELECT user_id, role FROM project_members WHERE project_id = :id";
+            $memberStmt = $this->db->prepare($memberQuery);
+            $memberStmt->execute([":id" => $id]);
+            $data['team'] = $memberStmt->fetchAll(PDO::FETCH_ASSOC);
+
             return new ProjectEntity($data);
         } catch (PDOException $e) {
             echo "<h2 style='color:red'> Erreur SQL :</h2>";

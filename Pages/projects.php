@@ -18,7 +18,7 @@ $clientRepo = new ClientRepository();
 $authService = new AuthService();
 $authUser = $authService->getAuthUser();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) && $authUser->type !== 'Client') {
     $form = new ProjectForm($_POST);
     $projectRepo->createProject($form->formatData());
     header("Location: " . $_SERVER['PHP_SELF']);
@@ -29,7 +29,9 @@ $filters = [
     'tab' => $_GET['tab'] ?? 'all',
     'search' => $_GET['search'] ?? '',
     'status' => $_GET['status'] ?? 'all',
-    'sort' => $_GET['sort'] ?? 'recent'
+    'sort' => $_GET['sort'] ?? 'recent',
+    'priority' => $_GET['priority'] ?? 'all',
+    'client_id' => $_GET['client_id'] ?? 'all',
 ];
 
 $allProjects = $projectRepo->getAllProjects(); 
@@ -50,6 +52,7 @@ $allClients = $clientRepo->getAllClients();
 
 <body>
     <div class="app-container">
+        <?php if ($authUser->type !== 'Client'): ?>
         <div class="popup-overlay hidden" id="project-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
@@ -77,6 +80,7 @@ $allClients = $clientRepo->getAllClients();
                 </form>
             </div>
         </div>
+        <?php endif; ?>
 
         <header class="mobile-header">
             <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
@@ -132,9 +136,27 @@ $allClients = $clientRepo->getAllClients();
                             <i class="ph ph-funnel"></i>
                             <select name="status" onchange="this.form.submit()">
                                 <option value="all" <?= $filters['status'] === 'all' ? 'selected' : '' ?>>Statut: Tout</option>
-                                <option value="En cours" <?= $filters['status'] === 'En cours' ? 'selected' : '' ?>>En cours</option>
                                 <option value="En attente" <?= $filters['status'] === 'En attente' ? 'selected' : '' ?>>En attente</option>
+                                <option value="En cours" <?= $filters['status'] === 'En cours' ? 'selected' : '' ?>>En cours</option>
                                 <option value="Terminé" <?= $filters['status'] === 'Terminé' ? 'selected' : '' ?>>Terminé</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="width: 160px;">
+                            <i class="ph ph-warning-circle"></i>
+                            <select name="priority" onchange="this.form.submit()">
+                                <option value="all" <?= $filters['priority'] === 'all' ? 'selected' : '' ?>>Priorité: Tout</option>
+                                <option value="Haute" <?= $filters['priority'] === 'Haute' ? 'selected' : '' ?>>Haute</option>
+                                <option value="Moyenne" <?= $filters['priority'] === 'Moyenne' ? 'selected' : '' ?>>Moyenne</option>
+                                <option value="Basse" <?= $filters['priority'] === 'Basse' ? 'selected' : '' ?>>Basse</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="width: 180px;">
+                            <i class="ph ph-buildings"></i>
+                            <select name="client_id" onchange="this.form.submit()">
+                                <option value="all" <?= $filters['client_id'] === 'all' ? 'selected' : '' ?>>Client: Tout</option>
+                                <?php foreach ($allClients as $c): ?>
+                                    <option value="<?= $c->id ?>" <?= $filters['client_id'] == $c->id ? 'selected' : '' ?>><?= htmlspecialchars($c->company) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="input-group" style="width: 160px;">
@@ -154,7 +176,7 @@ $allClients = $clientRepo->getAllClients();
                     <?php else: ?>
                         <?php foreach ($filteredProjects as $project):
                             $client = $clientRepo->getClientsById($project->client_id);
-                            $owner = $userRepo->getClientsById($project->owner_id);
+                            $owner = $userRepo->getUserById($project->owner_id);
 
                             $statusClass = match ($project->status) {
                                 'En cours' => 'badge-active', 'En attente' => 'badge-waiting', 'Terminé' => 'badge', default => 'badge-outline'
@@ -193,7 +215,9 @@ $allClients = $clientRepo->getAllClients();
                     <?php endif; ?>
                 </div>
             </div>
+            <?php if ($authUser->type !== 'Client'): ?>
             <button class="btn btn-primary btn-floating" onclick="togglePopup('project-popup')"><i class="ph-bold ph-plus"></i> <span>Nouveau</span></button>
+            <?php endif; ?>
         </main>
     </div>
     <script src="../assets/js/script.js"></script>

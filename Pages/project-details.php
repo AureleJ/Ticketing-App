@@ -19,13 +19,49 @@ $ticketRepo = new TicketRepository();
 $userRepo = new UserRepository();
 $clientRepo = new ClientRepository();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $projectIdToDelete = (int) $_POST['id'];
-    $projectRepo->deleteProject($projectIdToDelete);
-    header('Location: projects.php');
-    exit;
+$id = (int) $_GET['id'];
+
+$project = $projectRepo->getProjectsById($id);
+
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
+
+$canManageProject = false;
+if ($authUser->type !== 'Client') {
+    $canManageProject = $authUser->type === 'Admin'
+        || $project->owner_id === $authUser->id;
+
+    if (!$canManageProject) {
+        foreach ($project->team as $member) {
+            if ((int) $member['user_id'] === $authUser->id) {
+                $canManageProject = true;
+                break;
+            }
+        }
+    }
 }
-$id = $_GET['id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $canManageProject) {
+    if ($_POST['action'] === 'delete') {
+        $projectRepo->deleteProject((int) $_POST['id']);
+        header('Location: projects.php');
+        exit;
+    }
+    if ($_POST['action'] === 'edit') {
+        $projectRepo->editProject((int) $_POST['id'], [
+            'name' => htmlspecialchars($_POST['name']),
+            'description' => htmlspecialchars($_POST['description']),
+            'client_id' => (int) $_POST['client_id'],
+            'status' => htmlspecialchars($_POST['status']),
+            'priority' => htmlspecialchars($_POST['priority']),
+            'progress' => (int) $_POST['progress'],
+            'budget_h' => (int) $_POST['budget_h'],
+            'total_h' => (int) $_POST['total_h'],
+        ]);
+        header('Location: project-details.php?id=' . (int) $_POST['id']);
+        exit;
+    }
+}
 
 $project = $projectRepo->getProjectsById($id);
 $client = $clientRepo->getClientsById($project->client_id);
@@ -44,8 +80,7 @@ $statusClass = match ($project->status) {
     'En cours' => 'badge-active', 'En attente' => 'badge-waiting', 'Terminé' => 'badge', default => 'badge-outline'
 };
 
-$authService = new AuthService();
-$authUser = $authService->getAuthUser();
+$allClients = $clientRepo->getAllClients();
 ?>
 
 <!DOCTYPE html>
@@ -67,14 +102,62 @@ $authUser = $authService->getAuthUser();
                     <h3 class="text-lg font-semibold">Modifier le projet</h3>
                     <button type="button" class="btn-icon" onclick="togglePopup('edit-project-popup')"><i class="ph-bold ph-x"></i></button>
                 </div>
-                <form id="edit-project-form">
+                <form method="POST">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="id" value="<?= $project->id ?>">
                     <div class="popup-body">
-                        <div class="input-group mb-md"><i class="ph ph-folder"></i><input type="text" value="<?= htmlspecialchars($project->name) ?>" required></div>
-                        <div class="input-group mb-md"><i class="ph ph-article"></i><textarea rows="3"><?= htmlspecialchars($project->description) ?></textarea></div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-folder"></i>
+                            <input type="text" name="name" value="<?= htmlspecialchars($project->name) ?>" required>
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-article"></i>
+                            <textarea name="description" rows="3"><?= htmlspecialchars($project->description) ?></textarea>
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-buildings"></i>
+                            <select name="client_id" required>
+                                <?php foreach ($allClients as $c): ?>
+                                    <option value="<?= $c->id ?>" <?= $c->id === $project->client_id ? 'selected' : '' ?>><?= htmlspecialchars($c->company) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="flex gap-md mb-md">
+                            <div class="input-group w-full">
+                                <i class="ph ph-flag"></i>
+                                <select name="status">
+                                    <?php foreach (['En attente', 'En cours', 'Terminé'] as $s): ?>
+                                        <option value="<?= $s ?>" <?= $s === $project->status ? 'selected' : '' ?>><?= $s ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="input-group w-full">
+                                <i class="ph ph-warning-circle"></i>
+                                <select name="priority">
+                                    <?php foreach (['Basse', 'Moyenne', 'Haute'] as $pr): ?>
+                                        <option value="<?= $pr ?>" <?= $pr === $project->priority ? 'selected' : '' ?>><?= $pr ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex gap-md mb-md">
+                            <div class="input-group w-full">
+                                <i class="ph ph-chart-line-up"></i>
+                                <input type="number" name="progress" value="<?= $project->progress ?>" min="0" max="100" placeholder="Avancement %">
+                            </div>
+                            <div class="input-group w-full">
+                                <i class="ph ph-clock"></i>
+                                <input type="number" name="budget_h" value="<?= $project->budget_h ?>" min="0" placeholder="Budget h">
+                            </div>
+                            <div class="input-group w-full">
+                                <i class="ph ph-hourglass"></i>
+                                <input type="number" name="total_h" value="<?= $project->total_h ?>" min="0" placeholder="Total h">
+                            </div>
+                        </div>
                     </div>
                     <div class="popup-footer">
                         <button type="button" class="btn btn-secondary" onclick="togglePopup('edit-project-popup')">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Modifier</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
                     </div>
                 </form>
             </div>
@@ -89,7 +172,9 @@ $authUser = $authService->getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php" class="active"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
@@ -112,6 +197,7 @@ $authUser = $authService->getAuthUser();
                 <div class="flex-between top-bar glass-panel animate-item">
                     <a href="projects.php" class="btn btn-secondary no-border"><i class="ph-bold ph-arrow-left"></i> Retour</a>
                     <div class="flex gap-sm">
+                        <?php if ($canManageProject): ?>
                         <button class="btn btn-secondary" onclick="togglePopup('edit-project-popup')"><i class="ph ph-pencil-simple"></i> <span>Modifier</span></button>
                         <form method="POST" onsubmit="return confirm('Etes vous sur de vouloir supprimer ce projet ? Si vous faites cela suprimmera touts les tickets liés au projet !');">
                             <input type="hidden" name="action" value="delete">
@@ -120,6 +206,7 @@ $authUser = $authService->getAuthUser();
                                 <i class="ph ph-trash"></i> <span>Supprimer</span>
                             </button>
                         </form>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -148,7 +235,7 @@ $authUser = $authService->getAuthUser();
                         <div class="flex gap-md flex-wrap">
                             <?php if (!empty($project->team)):
                                 foreach ($project->team as $memberData):
-                                    $memberUser = $userRepo->getClientsById($memberData['user_id']);
+                                    $memberUser = $userRepo->getUserById($memberData['user_id']);
                                     if (!$memberUser) continue;
                             ?>
                                 <div class="flex-center-y gap-sm">
@@ -228,7 +315,7 @@ $authUser = $authService->getAuthUser();
                                     </thead>
                                     <tbody>
                                         <?php foreach ($tickets as $ticket):
-                                            $assigned = $userRepo->getClientsById($ticket->assigned_id);
+                                            $assigned = $userRepo->getUserById($ticket->assigned_id);
                                             $statusClass = match($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge' };
                                             $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => '' };
                                             $typeClass = $ticket->type === 'Facturable' ? 'badge-urgent' : 'badge-active';

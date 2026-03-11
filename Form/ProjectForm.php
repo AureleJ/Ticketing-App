@@ -18,7 +18,7 @@ class ProjectForm extends FormService
             "budget_h"    => $this->inputInt("budget_h", 0),
             "total_h"     => $this->inputInt("total_h", 100), 
             "owner_id"    => $currentUser->id,
-            "priority"    => $this->input("priority", "Medium"),
+            "priority"    => $this->input("priority", "Moyenne"),
             "team"        => [] 
         ];
     }

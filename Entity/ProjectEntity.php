@@ -32,7 +32,7 @@ class ProjectEntity extends Entity
         $this->date = $data['date'] ?? date('Y-m-d');
         $this->owner = $data['owner'] ?? '';
         $this->owner_id = (int) ($data['owner_id'] ?? 0);
-        $this->priority = $data['priority'] ?? 'low';
+        $this->priority = $data['priority'] ?? 'Basse';
         $this->team = $data["team"] ?? [];
     }
 }
