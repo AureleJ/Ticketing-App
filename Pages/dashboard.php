@@ -23,11 +23,10 @@ $projectRepo = new ProjectRepository();
 $clientRepo = new ClientRepository();
 $userRepo = new UserRepository();
 
-
 $authService = new AuthService();
 $authUser = $authService->getAuthUser();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST) && $authUser->type !== 'Client') {
     if (isset($_POST['form_type']) && $_POST['form_type'] === 'ticket') {
         $form = new TicketForm($_POST);
         $ticketRepo->createTicket($form->formatData());
@@ -59,7 +58,7 @@ $stats = [
     'inProgress' => count(array_filter($allTickets, fn($t) => $t->status === 'En cours')),
     'waiting' => count(array_filter($allTickets, fn($t) => $t->status === 'En attente')),
     'untraited' => count(array_filter($allTickets, fn($t) => $t->status === 'Non traité')),
-    'hours' => 142
+    'hours' => array_sum(array_map(fn($p) => $p->budget_h, $allProjects)),
 ];
 ?>
 
@@ -76,13 +75,14 @@ $stats = [
 
 <body>
     <div class="app-container">
+        <?php if ($authUser->type !== 'Client'): ?>
         <div class="popup-overlay hidden" id="ticket-popup">
             <div class="glass-panel popup-card">
                 <div class="popup-header">
-                    <h3>Nouveau Ticket</h3><button class="btn-icon" onclick="togglePopup('ticket-popup')"><i
-                            class="ph-bold ph-x"></i></button>
+                    <h3>Nouveau Ticket</h3><button class="btn-icon" onclick="togglePopup('ticket-popup')"><i class="ph-bold ph-x"></i></button>
                 </div>
                 <form id="ticket-form" method="POST">
+                    <input type="hidden" name="form_type" value="ticket">
                     <div class="popup-body">
                         <div class="input-group mb-md">
                             <i class="ph ph-text-t"></i>
@@ -155,7 +155,7 @@ $stats = [
                             <i class="ph ph-building"></i>
                             <select name="client_id" required>
                                 <option value="" disabled selected>Client</option>
-                                <?php foreach ($allClientsList as $c): ?>
+                                <?php foreach ($allClients as $c): ?>
                                     <option value="<?= $c->id ?>"><?= $c->company ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -202,6 +202,7 @@ $stats = [
                 </form>
             </div>
         </div>
+        <?php endif; ?>
 
         <header class="mobile-header">
             <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
@@ -212,7 +213,9 @@ $stats = [
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php" class="active"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
@@ -237,6 +240,7 @@ $stats = [
                     <h2>Tableau de bord</h2>
                 </div>
 
+                <?php if ($authUser->type !== 'Client'): ?>
                 <div class="flex gap-md animate-item delay-1 dashboard-stack">
 
                     <div class="flex gap-md w-full stats-stack">
@@ -282,6 +286,7 @@ $stats = [
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <div class="pannel glass-panel animate-item delay-2">
                     <div class="flex-between mb-md">
@@ -306,7 +311,7 @@ $stats = [
                             <tbody>
                                 <?php foreach ($tickets as $ticket):
                                     $client = $clientRepo->getClientsById($ticket->client_id);
-                                    $assigned = $userRepo->getClientsById($ticket->assigned_id);
+                                    $assigned = $userRepo->getUserById($ticket->assigned_id);
 
                                     $statusClass = match ($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge'};
                                     $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => ''};
@@ -403,13 +408,17 @@ $stats = [
                     </div>
                 </div>
 
+                <?php if ($authUser->type !== 'Client'): ?>
                 <div class="pannel glass-panel animate-item delay-2">
                     <div class="flex-between mb-md">
                         <h3 class="text-lg">Clients Récents</h3>
                         <a href="clients.php" class="text-muted text-sm">Voir tout</a>
                     </div>
                     <div class="clients-grid animate-item delay-2" id="clients-grid">
-                        <?php foreach ($clients as $client): ?>
+                        <?php foreach ($clients as $client):
+                            $nbProjects = count(array_filter($allProjects, fn($p) => $p->client_id === $client->id));
+                            $nbTickets = count(array_filter($allTickets, fn($t) => $t->client_id === $client->id));
+                        ?>
                             <a class="glass-panel client-card" href="clients-details.php?id=<?= $client->id ?>">
                                 <div class="client-header">
                                     <div class="user-avatar large <?= $client->getAvatarColor() ?>">
@@ -430,14 +439,15 @@ $stats = [
                                     </div>
                                 </div>
                                 <div class="client-footer">
-                                    <div class="client-stat"><span>2</span> Projets</div>
-                                    <div class="client-stat"><span>5</span> Tickets</div>
+                                    <div class="client-stat"><span><?= $nbProjects ?></span> Projets</div>
+                                    <div class="client-stat"><span><?= $nbTickets ?></span> Tickets</div>
                                     <div class="btn-icon"><i class="ph-bold ph-caret-right"></i></div>
                                 </div>
                             </a>
                         <?php endforeach; ?>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </main>
     </div>
