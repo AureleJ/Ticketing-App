@@ -19,8 +19,8 @@ class UserRepository
             $query = "SELECT * FROM $this->tableName";
             $stmt = $this->db->query($query);
             $data = $stmt->fetchAll();
-            $clients = array_map(fn($item) => new UserEntity($item), $data);
-            return $clients;
+            $users = array_map(fn($item) => new UserEntity($item), $data);
+            return $users;
         } catch (PDOException $e) {
             echo "<h2 style='color:red'> Erreur SQL :</h2>";
             echo "<pre>" . $e->getMessage() . "</pre>";
@@ -68,22 +68,44 @@ class UserRepository
         }
     }
 
-    /* public function createUser(array $params)
-   {
-       try {
-           $query = "INSERT INTO $this->tableName (company, contact_name, email, phone, status, avatar_color) VALUES (:company, :contact_name, :email, :phone, :status, :avatar_color)";
-           $stmt = $this->db->prepare($query);
-           $stmt->execute([
-               ":company" => $params["company"],
-               ":contact_name" => $params["contact_name"],
-               ":email" => $params["email"],
-               ":phone" => $params["phone"],
-               ":status" => $params["status"],
-               ":avatar_color" => $params["avatar_color"],
-           ]);
-       } catch (PDOException $e) {
-           echo "<h2 style='color:red'> Erreur SQL :</h2>";
-           echo "<pre>" . $e->getMessage() . "</pre>";
-       }
-   } */
+    public function createUser(array $params)
+    {
+        try {
+            $query = "INSERT INTO $this->tableName (type, firstname, lastname, username, email, password_hash, role, status, avatar_color, client_id) VALUES (:type, :firstname, :lastname, :username, :email, :password_hash, :role, :status, :avatar_color, :client_id)";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":type" => $params["type"],
+                ":firstname" => $params["firstname"],
+                ":lastname" => $params["lastname"],
+                ":username" => $params["username"],
+                ":email" => $params["email"],
+                ":password_hash" => $params["password_hash"],
+                ":role" => $params["role"],
+                ":status" => $params["status"],
+                ":avatar_color" => $params["avatar_color"],
+                ":client_id" => $params["client_id"],
+            ]);
+            return (int) $this->db->lastInsertId();
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . $e->getMessage() . "</pre>";
+            return false;
+        }
+    }
+
+    public function getUserByEmail($email)
+    {
+        try {
+            $query = "SELECT * FROM $this->tableName WHERE email=:email";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([":email" => $email]);
+            $data = $stmt->fetch();
+            if (!$data) {
+                return null;
+            }
+            return new UserEntity($data);
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
 }

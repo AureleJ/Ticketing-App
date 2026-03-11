@@ -14,7 +14,7 @@ class ClientForm extends FormService
             "email"        => $this->input("mail", ""),
             "phone"        => $this->input("phone", ""),
             "status"       => "Active", 
-            "avatarColor"  => $randomColor
+            "avatar_color"  => $randomColor
         ];
     }
 }
