@@ -8,8 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once __DIR__ . '/../Service/AuthService.php';
 
-$authService = new AuthService();
-$authUser = $authService->getAuthUser();
+$authUser = AuthService::getAuthUser();
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +33,9 @@ $authUser = $authService->getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php" class="active"><i class="ph ph-user"></i>Mon Profil</a></li>
@@ -90,8 +91,7 @@ $authUser = $authService->getAuthUser();
                             <input type="text" value="<?= $authUser->role ?>" disabled style="opacity: 0.5;">
                         </div>
                         <div class="flex justify-end mt-sm">
-                            <button class="btn btn-primary"
-                                onclick="showToast('Modifications enregistrées')">Enregistrer les modifications</button>
+                            <button class="btn btn-primary" onclick="showToast('Modifications enregistrées')">Enregistrer les modifications</button>
                         </div>
                     </div>
                 </div>

@@ -35,7 +35,9 @@ $authUser = $authService->getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
