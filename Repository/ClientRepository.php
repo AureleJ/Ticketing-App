@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../Entity/ClientEntity.php';
 require_once __DIR__ . '/../Service/DatabaseService.php';
+require_once __DIR__ . '/../Repository/TicketRepository.php';
+require_once __DIR__ . '/../Repository/ProjectRepository.php';
 
 class ClientRepository
 {
@@ -32,9 +34,23 @@ class ClientRepository
         }
     }
 
-    public function updateClient(array $params)
+    public function updateClient(int $id, array $params)
     {
-
+        try {
+            $query = "UPDATE $this->tableName SET company = :company, contact_name = :contact_name, email = :email, phone = :phone, status = :status WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([
+                ":id" => $id,
+                ":company" => $params["company"],
+                ":contact_name" => $params["contact_name"],
+                ":email" => $params["email"],
+                ":phone" => $params["phone"],
+                ":status" => $params["status"],
+            ]);
+        } catch (PDOException $e) {
+            echo "<h2 style='color:red'> Erreur SQL :</h2>";
+            echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+        }
     }
 
     public function deleteClient(int $id)
@@ -89,6 +105,9 @@ class ClientRepository
                 ":id" => $id
             ]);
             $data = $stmt->fetch();
+            if (!$data) {
+                return new ClientEntity([]);
+            }
             return new ClientEntity($data);
         } catch (PDOException $e) {
             echo "<h2 style='color:red'> Erreur SQL :</h2>";

@@ -24,18 +24,37 @@ $id = $_GET['id'] ?? null;
 
 $client = $clientRepo->getClientsById((int)$id);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $clientIdToDelete = (int) $_POST['id'];
-    $clientRepo->deleteClient($clientIdToDelete);
-    header('Location: clients.php');
+$authService = new AuthService();
+$authUser = $authService->getAuthUser();
+
+if ($authUser->type === 'Client' && $authUser->client_id !== $client->id) {
+    header('Location: clients-details.php?id=' . $authUser->client_id);
     exit;
+}
+
+$canManageClient = $authUser->type === 'Admin';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $canManageClient) {
+    if ($_POST['action'] === 'delete') {
+        $clientRepo->deleteClient((int) $_POST['id']);
+        header('Location: clients.php');
+        exit;
+    }
+    if ($_POST['action'] === 'edit') {
+        $clientRepo->updateClient((int) $_POST['id'], [
+            'company' => htmlspecialchars($_POST['company']),
+            'contact_name' => htmlspecialchars($_POST['contact_name']),
+            'email' => htmlspecialchars($_POST['email']),
+            'phone' => htmlspecialchars($_POST['phone']),
+            'status' => htmlspecialchars($_POST['status']),
+        ]);
+        header('Location: clients-details.php?id=' . (int) $_POST['id']);
+        exit;
+    }
 }
 
 $clientProjects = $projectRepo->getClientProjects($client->id);
 $clientTickets = $ticketRepo->findClientTicket($client->id);
-
-$authService = new AuthService();
-$authUser = $authService->getAuthUser();
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +70,49 @@ $authUser = $authService->getAuthUser();
 
 <body>
     <div class="app-container">
+        <div class="popup-overlay hidden" id="edit-client-popup">
+            <div class="glass-panel popup-card">
+                <div class="popup-header">
+                    <h3 class="text-lg font-semibold">Modifier le client</h3>
+                    <button type="button" class="btn-icon" onclick="togglePopup('edit-client-popup')"><i class="ph-bold ph-x"></i></button>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="id" value="<?= $client->id ?>">
+                    <div class="popup-body">
+                        <div class="input-group mb-md">
+                            <i class="ph ph-buildings"></i>
+                            <input type="text" name="company" value="<?= htmlspecialchars($client->company) ?>" placeholder="Entreprise" required>
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-user"></i>
+                            <input type="text" name="contact_name" value="<?= htmlspecialchars($client->contact_name) ?>" placeholder="Nom du contact">
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" name="email" value="<?= htmlspecialchars($client->email) ?>" placeholder="Email">
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-phone"></i>
+                            <input type="text" name="phone" value="<?= htmlspecialchars($client->phone) ?>" placeholder="Téléphone">
+                        </div>
+                        <div class="input-group mb-md">
+                            <i class="ph ph-flag"></i>
+                            <select name="status">
+                                <?php foreach (['Active', 'Prospect', 'Inactive'] as $s): ?>
+                                    <option value="<?= $s ?>" <?= $s === $client->status ? 'selected' : '' ?>><?= $s ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="popup-footer">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('edit-client-popup')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <header class="mobile-header">
             <div class="text-logo"><a href="dashboard.php">Ticketing.</a></div>
             <a href="logout.php" class="btn-icon"><i class="ph ph-sign-out"></i></a>
@@ -60,7 +122,9 @@ $authUser = $authService->getAuthUser();
             <div class="text-logo">Ticketing.</div>
             <ul class="nav-links">
                 <li><a href="dashboard.php"><i class="ph ph-squares-four"></i> Tableau de bord</a></li>
+                <?php if ($authUser->type !== 'Client'): ?>
                 <li><a href="clients.php" class="active"><i class="ph ph-users"></i> Clients</a></li>
+                <?php endif; ?>
                 <li><a href="projects.php"><i class="ph ph-folder-notch"></i> Projets</a></li>
                 <li><a href="tickets.php"><i class="ph ph-ticket"></i> Tickets</a></li>
                 <li><a href="profile.php"><i class="ph ph-user"></i>Mon Profil</a></li>
@@ -82,9 +146,10 @@ $authUser = $authService->getAuthUser();
             <div class="content-scroll">
 
                 <div class="flex-between top-bar glass-panel animate-item">
-                    <a href="clients.php" class="btn btn-secondary no-border"><i class="ph-bold ph-arrow-left"></i> Retour</a>
+                    <a href="<?= $authUser->type === 'Client' ? 'dashboard.php' : 'clients.php' ?>" class="btn btn-secondary no-border"><i class="ph-bold ph-arrow-left"></i> Retour</a>
                     <div class="flex gap-sm">
-                        <button class="btn btn-secondary"><i class="ph ph-pencil-simple"></i> <span>Modifier</span></button>
+                        <?php if ($canManageClient): ?>
+                        <button class="btn btn-secondary" onclick="togglePopup('edit-client-popup')"><i class="ph ph-pencil-simple"></i> <span>Modifier</span></button>
                         <form method="POST" onsubmit="return confirm('Etes vous sur de vouloir supprimer ce client ? Si vous faites cela suprimmera touts les tickets et les projets liés au client !');">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<?= $client->id ?>">
@@ -92,6 +157,7 @@ $authUser = $authService->getAuthUser();
                                 <i class="ph ph-trash"></i> <span>Supprimer</span>
                             </button>
                         </form>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -122,7 +188,7 @@ $authUser = $authService->getAuthUser();
                     <div class="projects-grid" id="projects-grid">
                         <?php foreach($clientProjects as $project): 
                             $progressColor = $project->progress >= 80 ? 'var(--success-color)' : 'var(--accent-color)';
-                            $owner = $userRepo->getClientsById($project->owner_id);
+                            $owner = $userRepo->getUserById($project->owner_id);
                         ?>
                             <a href="project-details.php?id=<?= $project->id ?>" class="glass-panel project-card">
                                 <div>
@@ -175,7 +241,7 @@ $authUser = $authService->getAuthUser();
                             </thead>
                             <tbody>
                                 <?php foreach($clientTickets as $ticket): 
-                                    $assigned = $userRepo->getClientsById($ticket->assigned_id);
+                                    $assigned = $userRepo->getUserById($ticket->assigned_id);
 
                                     $statusClass = match($ticket->status) { 'En cours' => 'badge-active', 'Terminé' => 'badge', 'En attente' => 'badge-waiting', 'Non traité' => 'badge-urgent', default => 'badge' };
                                     $priorityClass = match ($ticket->priority) { 'Haute' => 'text-danger', 'Moyenne' => 'text-warning', 'Basse' => '', default => '' };

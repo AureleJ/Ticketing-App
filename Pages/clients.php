@@ -26,6 +26,11 @@ $userRepo = new UserRepository();
 $authService = new AuthService();
 $authUser = $authService->getAuthUser();
 
+if ($authUser->type === 'Client') {
+    header('Location: clients-details.php?id=' . $authUser->client_id);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
     $form = new ClientForm($_POST);
     $newClientData = $form->formatData();
@@ -37,6 +42,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 $allClients = $clientRepo->getAllClients();
 $allProjects = $projectRepo->getAllProjects();
 $allTickets = $ticketRepo->getAllTickets();
+
+$clientFilters = [
+    'search' => $_GET['search'] ?? '',
+    'status' => $_GET['status'] ?? 'all',
+    'sort' => $_GET['sort'] ?? 'name',
+];
+
+$filteredClients = $allClients;
+
+if (!empty($clientFilters['search'])) {
+    $term = strtolower($clientFilters['search']);
+    $filteredClients = array_filter($filteredClients, fn($c) => str_contains(strtolower($c->company), $term) || str_contains(strtolower($c->contact_name), $term) || str_contains(strtolower($c->email), $term));
+}
+
+if ($clientFilters['status'] !== 'all') {
+    $filteredClients = array_filter($filteredClients, fn($c) => $c->status === $clientFilters['status']);
+}
+
+usort($filteredClients, function ($a, $b) use ($clientFilters, $allProjects, $allTickets) {
+    if ($clientFilters['sort'] === 'projects') {
+        $aNb = count(array_filter($allProjects, fn($p) => $p->client_id === $a->id));
+        $bNb = count(array_filter($allProjects, fn($p) => $p->client_id === $b->id));
+        return $bNb - $aNb;
+    }
+    if ($clientFilters['sort'] === 'tickets') {
+        $aNb = count(array_filter($allTickets, fn($t) => $t->client_id === $a->id));
+        $bNb = count(array_filter($allTickets, fn($t) => $t->client_id === $b->id));
+        return $bNb - $aNb;
+    }
+    return strcasecmp($a->company, $b->company);
+});
 ?>
 
 <!DOCTYPE html>
@@ -111,14 +147,39 @@ $allTickets = $ticketRepo->getAllTickets();
                 </div>
 
                 <div class="filters-bar animate-item delay-1">
-                    <div class="input-group search-wrapper flex-1">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" placeholder="Rechercher...">
-                    </div>
+                    <form method="GET" class="w-full flex gap-sm">
+                        <div class="input-group search-wrapper flex-1">
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="text" name="search" placeholder="Rechercher..." value="<?= htmlspecialchars($clientFilters['search']) ?>">
+                        </div>
+                        <div class="flex gap-sm">
+                            <div class="input-group" style="width: 160px;">
+                                <i class="ph ph-funnel"></i>
+                                <select name="status" onchange="this.form.submit()">
+                                    <option value="all" <?= $clientFilters['status'] === 'all' ? 'selected' : '' ?>>Statut: Tout</option>
+                                    <option value="Active" <?= $clientFilters['status'] === 'Active' ? 'selected' : '' ?>>Active</option>
+                                    <option value="Prospect" <?= $clientFilters['status'] === 'Prospect' ? 'selected' : '' ?>>Prospect</option>
+                                    <option value="Inactive" <?= $clientFilters['status'] === 'Inactive' ? 'selected' : '' ?>>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="width: 160px;">
+                                <i class="ph ph-sort-ascending"></i>
+                                <select name="sort" onchange="this.form.submit()">
+                                    <option value="name" <?= $clientFilters['sort'] === 'name' ? 'selected' : '' ?>>Nom A-Z</option>
+                                    <option value="projects" <?= $clientFilters['sort'] === 'projects' ? 'selected' : '' ?>>Nb Projets</option>
+                                    <option value="tickets" <?= $clientFilters['sort'] === 'tickets' ? 'selected' : '' ?>>Nb Tickets</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-secondary">Filtrer</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="clients-grid animate-item delay-2" id="clients-grid">
-                    <?php foreach ($allClients as $client): 
+                    <?php if (empty($filteredClients)): ?>
+                        <div class="text-muted text-center w-full" style="grid-column: 1/-1; padding: 40px;">Aucun client trouvé.</div>
+                    <?php else: ?>
+                    <?php foreach ($filteredClients as $client): 
                         $nbProjects = count(array_filter($allProjects, fn($p) => $p->client_id === $client->id));
                         $nbTickets = count(array_filter($allTickets, fn($t) => $t->client_id === $client->id));
                         
@@ -143,6 +204,7 @@ $allTickets = $ticketRepo->getAllTickets();
                             </div>
                         </a>
                     <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
