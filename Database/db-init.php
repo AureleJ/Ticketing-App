@@ -18,17 +18,6 @@ try {
 
     echo "Création de la structure...<br>";
 
-    $pdo->exec("CREATE TABLE users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        firstname VARCHAR(100) NOT NULL,
-        lastname VARCHAR(100) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        mdp VARCHAR(20) NOT NULL,
-        role VARCHAR(50) DEFAULT 'User',
-        status VARCHAR(50) DEFAULT 'Active',
-        avatar_color VARCHAR(20) DEFAULT 'blue'
-    ) ENGINE=InnoDB");
-
     $pdo->exec("CREATE TABLE clients (
         id INT AUTO_INCREMENT PRIMARY KEY,
         company VARCHAR(255) NOT NULL,
@@ -37,6 +26,21 @@ try {
         phone VARCHAR(50),
         status VARCHAR(50) DEFAULT 'Active',
         avatar_color VARCHAR(20) DEFAULT 'blue'
+    ) ENGINE=InnoDB");
+
+    $pdo->exec("CREATE TABLE users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type VARCHAR(50) DEFAULT 'Member',
+        firstname VARCHAR(100) NOT NULL,
+        lastname VARCHAR(100) NOT NULL,
+        username VARCHAR(255) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'User',
+        status VARCHAR(50) DEFAULT 'Active',
+        avatar_color VARCHAR(20) DEFAULT 'blue',
+        client_id INT DEFAULT NULL,
+        FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL
     ) ENGINE=InnoDB");
 
     $pdo->exec("CREATE TABLE projects (
@@ -82,89 +86,143 @@ try {
 
     echo "Insertion des données...<br>";
 
-    $users = [
-        [1, "Aurele", "Joblet", "aurele@ticketing.com", "1234", "Admin", "Active", "blue"],
-        [2, "Jean", "Dev", "jean@ticketing.com", "1234", "Lead Dev", "Active", "yelBasse"],
-        [3, "Sophie", "Graph", "sophie@design.com", "1234", "Designer UI/UX", "Active", "purple"],
-        [4, "Paul", "Sysadmin", "paul@ops.com", "1234", "DevOps", "Inactive", "red"],
-        [5, "Julie", "Front", "julie@ticketing.com", "1234", "Dev Front", "Active", "cyan"],
-        [6, "Thomas", "Mark", "thomas@marketing.com", "1234", "SEO Manager", "Active", "green"],
-        [7, "Admin", "Admin", "admin@ticketing.com", "Admin", "Admin", "Active", "red"]
-    ];
-    $stmt = $pdo->prepare("INSERT INTO users (id, firstname, lastname, email, mdp, role, status, avatar_color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    foreach ($users as $u)
-        $stmt->execute($u);
+    // Start transaction for data insertion
+    $pdo->beginTransaction();
 
+    // Insert clients first (users reference them)
     $clients = [
-        [1, "Bio Store", "Patrick Fabre", "direction@biostore.fr", "01 45 89 23 11", "Active", "green"],
-        [2, "Tech Consult", "Béatrice Joly", "support@techconsult.io", "09 78 54 12 30", "Active", "blue"],
-        [3, "Bakery & Co", "Sophie Martin", "commande@bakery.co", "06 12 34 56 78", "Active", "yelBasse"],
-        [4, "Banque S.A.", "M. Bernard (DSI)", "secu@banquesa.fr", "01 00 00 00 00", "Active", "red"],
-        [5, "Green Energy", "Lucie Power", "lucie@greenenergy.io", "07 99 88 77 66", "Prospect", "cyan"],
-        [6, "Garage Auto 2000", "André Mécano", "garage2000@orange.fr", "02 44 55 66 77", "Inactive", "gray"],
-        [7, "Start-up Nation", "Kevin Founder", "ceo@startupnation.com", "06 00 11 22 33", "Active", "purple"]
+        ["Bio Store", "Patrick Fabre", "biostore@ticketing.com", "01 45 89 23 11", "Active", "green"],
+        ["Tech Consult", "Béatrice Joly", "techconsult@ticketing.com", "09 78 54 12 30", "Active", "blue"],
+        ["Bakery & Co", "Jeanne Martin", "bakery@ticketing.com", "06 12 34 56 78", "Active", "yellow"],
+        ["Banque S.A.", "Sean Bernard", "banque@ticketing.com", "01 00 00 00 00", "Active", "red"],
+        ["Green Energy", "Lucie Power", "greenenergy@ticketing.com", "07 99 88 77 66", "Prospect", "cyan"],
+        ["Garage Auto 2000", "André Mécano", "garage@ticketing.com", "02 44 55 66 77", "Inactive", "gray"]
     ];
-    $stmt = $pdo->prepare("INSERT INTO clients (id, company, contact_name, email, phone, status, avatar_color) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    foreach ($clients as $c)
+    $stmt = $pdo->prepare("INSERT INTO clients (company, contact_name, email, phone, status, avatar_color) VALUES (?, ?, ?, ?, ?, ?)");
+    $clientCount = 0;
+    $clientIds = [];
+    foreach ($clients as $c) {
         $stmt->execute($c);
-
-
-    $projects = [
-        [0, "App Mobile E-commerce v2", "Refonte complète de l'application mobile sous Flutter.", 1, 1, 45, 150, 200, "En cours", "Haute", "2023-10-24"],
-        [1, "TMA Site Web", "Tierce Maintenance Applicative mensuelle.", 2, 2, 15, 10, 50, "En cours", "Moyenne", "2023-10-20"],
-        [2, "Refonte Identité Visuelle", "Création du nouveau logo et charte.", 3, 3, 100, 42, 40, "Terminé", "Basse", "2023-09-15"],
-        [3, "Audit de Sécurité Infra", "Pentest complet de l'infrastructure bancaire.", 4, 1, 10, 5, 80, "En attente", "Haute", "2023-11-01"],
-        [4, "Dashboard IoT & Data", "Développement d'un tableau de bord React.", 5, 2, 95, 190, 200, "En cours", "Haute", "2023-08-10"],
-        [5, "Campagne SEO Q4", "Optimisation du référencement naturel.", 6, 6, 30, 10, 35, "En cours", "Moyenne", "2023-11-10"],
-        [6, "Application SaaS RH", "MVP pour la gestion des congés.", 7, 1, 60, 120, 300, "En cours", "Haute", "2023-09-01"]
-    ];
-    $stmt = $pdo->prepare("INSERT INTO projects (id, name, description, client_id, owner_id, progress, budget_h, total_h, status, priority, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    foreach ($projects as $p) {
-        if ($p[0] === 0)
-            $p[0] = 100;
-        $stmt->execute($p);
+        $clientIds[] = $pdo->lastInsertId();
+        $clientCount++;
     }
+    echo "$clientCount clients insérés<br>";
 
+    // Insert users (client users linked to their company via client_id)
+    $users = [
+        ["Admin", "Aurele", "Joblet", "aurele", "aurele@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Admin", "Active", "blue", null],
+        ["Member", "Jean", "Dev", "jean", "jean@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Lead Dev", "Active", "yellow", null],
+        ["Member", "Sophie", "Graph", "sophie", "sophie@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Designer UI/UX", "Active", "purple", null],
+        ["Member", "Paul", "Sysadmin", "paul", "paul@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "DevOps", "Inactive", "red", null],
+        ["Member", "Julie", "Front", "julie", "julie@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Dev Front", "Active", "cyan", null],
+        ["Member", "Thomas", "Mark", "thomas", "thomas@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "SEO Manager", "Active", "green", null],
+        ["Admin", "Admin", "admin", "admin", "admin@ticketing.com", password_hash("Admin", PASSWORD_DEFAULT), "Admin", "Active", "red", null],
+        ["Client", "Patrick", "Fabre", "patrick", "patrick@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[0]],
+        ["Client", "Béatrice", "Joly", "beatrice", "beatrice@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[1]],
+        ["Client", "Jeanne", "Martin", "jeanne", "jeanne@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[2]],
+        ["Client", "Sean", "Bernard", "sean", "sean@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[3]],
+        ["Client", "Lucie", "Power", "lucie", "lucie@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[4]],
+        ["Client", "André", "Mécano", "andre", "andre@ticketing.com", password_hash("1234", PASSWORD_DEFAULT), "Client", "Active", "blue", $clientIds[5]]
+    ];
+    $stmt = $pdo->prepare("INSERT INTO users (type, firstname, lastname, username, email, password_hash, role, status, avatar_color, client_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $userCount = 0;
+    foreach ($users as $u) {
+        $stmt->execute($u);
+        $userCount++;
+    }
+    echo "$userCount utilisateurs insérés<br>";
+
+    // Insert projects
+    $projects = [
+        ["App Mobile E-commerce v2", "Refonte complète de l'application mobile sous Flutter.", 1, 1, 45, 150, 200, "En cours", "Haute", "2023-10-24"],
+        ["TMA Site Web", "Tierce Maintenance Applicative mensuelle.", 2, 2, 15, 10, 50, "En cours", "Moyenne", "2023-10-20"],
+        ["Refonte Identité Visuelle", "Création du nouveau logo et charte.", 3, 3, 100, 42, 40, "Terminé", "Basse", "2023-09-15"],
+        ["Audit de Sécurité Infra", "Pentest complet de l'infrastructure bancaire.", 4, 1, 10, 5, 80, "En attente", "Haute", "2023-11-01"],
+        ["Dashboard IoT & Data", "Développement d'un tableau de bord React.", 5, 2, 95, 190, 200, "En cours", "Haute", "2023-08-10"],
+        ["Campagne SEO Q4", "Optimisation du référencement naturel.", 6, 6, 30, 10, 35, "En cours", "Moyenne", "2023-11-10"],
+        ["Application SaaS RH", "MVP pour la gestion des congés.", 1, 1, 60, 120, 300, "En cours", "Haute", "2023-09-01"]
+    ];
+    $stmt = $pdo->prepare("INSERT INTO projects (name, description, client_id, owner_id, progress, budget_h, total_h, status, priority, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $projectCount = 0;
+    $projectIds = [];
+    foreach ($projects as $p) {
+        $stmt->execute($p);
+        $projectIds[] = $pdo->lastInsertId();
+        $projectCount++;
+    }
+    echo "$projectCount projets insérés<br>";
+
+    // Insert project members (using captured project IDs)
     $members = [
-        [100, 1, "PM"],
-        [100, 5, "Dev Mobile"],
-        [1, 2, "Back-end"],
-        [2, 3, "Lead Design"],
-        [3, 4, "Expert Sécu"],
-        [3, 2, "Support"],
-        [4, 2, "Lead Dev"],
-        [4, 5, "Front-end"],
-        [5, 6, "SEO Specialist"],
-        [6, 1, "Lead"],
-        [6, 2, "Back"]
+        [$projectIds[0], 1, "PM"],
+        [$projectIds[0], 5, "Dev Mobile"],
+        [$projectIds[1], 2, "Back-end"],
+        [$projectIds[2], 3, "Lead Design"],
+        [$projectIds[3], 4, "Expert Sécu"],
+        [$projectIds[3], 2, "Support"],
+        [$projectIds[4], 2, "Lead Dev"],
+        [$projectIds[4], 5, "Front-end"],
+        [$projectIds[5], 6, "SEO Specialist"],
+        [$projectIds[6], 1, "Lead"],
+        [$projectIds[6], 2, "Back"]
     ];
     $stmt = $pdo->prepare("INSERT INTO project_members (project_id, user_id, role) VALUES (?, ?, ?)");
-    foreach ($members as $m)
+    $memberCount = 0;
+    foreach ($members as $m) {
         $stmt->execute($m);
+        $memberCount++;
+    }
+    echo "$memberCount associations membres-projets insérées<br>";
 
+    // Insert tickets (using captured project IDs)
     $tickets = [
-        [1001, "Crash lancement Android 12", "Crash au splash screen.", 100, 1, 5, "En cours", "Haute", "Inclus", "2023-11-20 09:30:00"],
-        [1002, "Intégration Stripe v3", "Mise à jour webhooks.", 100, 1, 1, "En cours", "Haute", "Facturable", "2023-11-19 14:00:00"],
-        [1003, "Traductions manquantes", "Section commandes en EN.", 100, 1, 5, "Non traité", "Basse", "Inclus", "2023-11-18 10:15:00"],
-        [1004, "Faille XSS Form Contact", "Patch urgent requis.", 3, 4, 4, "En cours", "Haute", "Inclus", "2023-11-20 11:45:00"],
-        [1005, "Renouvellement SSL", "Wildcard expiré.", 3, 4, 4, "Terminé", "Haute", "Facturable", "2023-11-15 09:00:00"],
-        [1006, "Validation Maquette Home", "Attente retour client.", 2, 3, 3, "En attente", "Moyenne", "Inclus", "2023-11-17 16:30:00"],
-        [1007, "Export Logo SVG", "Fichiers sources envoyés.", 2, 3, 3, "Terminé", "Basse", "Inclus", "2023-11-14 11:00:00"],
-        [1008, "Update WordPress 6.4", "Backup fait.", 1, 2, 2, "En attente", "Basse", "Inclus", "2023-11-18 08:30:00"],
-        [1009, "Lenteur Dashboard", "Optimisation SQL.", 1, 2, 2, "En cours", "Moyenne", "Facturable", "2023-11-19 15:45:00"],
-        [1010, "Connexion MQTT instable", "Perte de paquets.", 4, 5, 2, "Non traité", "Haute", "Facturable", "2023-11-20 10:00:00"],
-        [1011, "Design Graphiques Conso", "Intégration Chart.js.", 4, 5, 5, "En cours", "Moyenne", "Inclus", "2023-11-16 14:00:00"],
-        [1012, "Bug calcul congés", "Années bissextiles HS.", 6, 7, 1, "Non traité", "Haute", "Inclus", "2023-11-20 08:00:00"],
-        [1013, "Setup CI/CD Pipeline", "GitHub Actions.", 6, 7, 4, "Terminé", "Moyenne", "Facturable", "2023-11-10 10:00:00"]
+        ["Crash lancement Android 12", "Crash au splash screen.", $projectIds[0], 1, 5, "En cours", "Haute", "Inclus", "2023-11-20 09:30:00"],
+        ["Intégration Stripe v3", "Mise à jour webhooks.", $projectIds[0], 1, 1, "En cours", "Haute", "Facturable", "2023-11-19 14:00:00"],
+        ["Traductions manquantes", "Section commandes en EN.", $projectIds[0], 1, 5, "Non traité", "Basse", "Inclus", "2023-11-18 10:15:00"],
+        ["Faille XSS Form Contact", "Patch urgent requis.", $projectIds[2], 4, 4, "En cours", "Haute", "Inclus", "2023-11-20 11:45:00"],
+        ["Renouvellement SSL", "Wildcard expiré.", $projectIds[2], 4, 4, "Terminé", "Haute", "Facturable", "2023-11-15 09:00:00"],
+        ["Validation Maquette Home", "Attente retour client.", $projectIds[1], 3, 3, "En attente", "Moyenne", "Inclus", "2023-11-17 16:30:00"],
+        ["Export Logo SVG", "Fichiers sources envoyés.", $projectIds[1], 3, 3, "Terminé", "Basse", "Inclus", "2023-11-14 11:00:00"],
+        ["Update WordPress 6.4", "Backup fait.", $projectIds[0], 2, 2, "En attente", "Basse", "Inclus", "2023-11-18 08:30:00"],
+        ["Lenteur Dashboard", "Optimisation SQL.", $projectIds[0], 2, 2, "En cours", "Moyenne", "Facturable", "2023-11-19 15:45:00"],
+        ["Connexion MQTT instable", "Perte de paquets.", $projectIds[4], 5, 2, "Non traité", "Haute", "Facturable", "2023-11-20 10:00:00"],
+        ["Design Graphiques Conso", "Intégration Chart.js.", $projectIds[4], 5, 5, "En cours", "Moyenne", "Inclus", "2023-11-16 14:00:00"],
+        ["Bug calcul congés", "Années bissextiles HS.", $projectIds[6], 1, 1, "Non traité", "Haute", "Inclus", "2023-11-20 08:00:00"],
+        ["Setup CI/CD Pipeline", "GitHub Actions.", $projectIds[6], 1, 4, "Terminé", "Moyenne", "Facturable", "2023-11-10 10:00:00"]
     ];
-    $stmt = $pdo->prepare("INSERT INTO tickets (id, subject, description, project_id, client_id, assigned_id, status, priority, type, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    foreach ($tickets as $t)
+    $stmt = $pdo->prepare("INSERT INTO tickets (subject, description, project_id, client_id, assigned_id, status, priority, type, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $ticketCount = 0;
+    $ticketIds = [];
+    foreach ($tickets as $t) {
         $stmt->execute($t);
+        $ticketIds[] = $pdo->lastInsertId();
+        $ticketCount++;
+    }
+    echo "$ticketCount tickets insérés<br>";
+
+    // Commit transaction
+    $pdo->commit();
 
     echo "<h2 style='color:green'>✅ Succès ! La base de données est prête.</h2>";
+    echo "<p style='color:green'><strong>Résumé :</strong><br>
+            - $userCount utilisateurs<br>
+            - $clientCount clients<br>
+            - $projectCount projets<br>
+            - $memberCount associations membres-projets<br>
+            - $ticketCount tickets<br>
+            - $ticketMemberCount associations membres-tickets</p>";
     echo "<a href='../index.php'>Aller à l'accueil</a>";
 
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     echo "<h2 style='color:red'>❌ Erreur SQL :</h2>";
-    echo "<pre>" . $e->getMessage() . "</pre>";
+    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    echo "<h2 style='color:red'>❌ Erreur :</h2>";
+    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
 }
