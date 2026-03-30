@@ -14,7 +14,7 @@
                     </button>
                 </div>
 
-                <form id="project-form" method="POST" action="{{ route('projects.store') }}">
+                <form id="project-form">
                     @csrf
 
                     <div class="popup-body">
@@ -172,7 +172,7 @@
                             <span class="text-xs text-muted">Resp: {{ $project->owner->getFullName() }}</span>
                         </div>
                         <div class="text-xs text-muted flex-center-y gap-xs">
-                            <i class="ph ph-calendar-blank"></i> {{ $project->created_at->format('M y') }}
+                            <i class="ph ph-calendar-blank"></i> {{ $project->created_at->format('d M y') }}
                         </div>
                     </div>
                 </div>

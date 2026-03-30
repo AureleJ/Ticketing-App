@@ -37,6 +37,7 @@ class ProjectController extends Controller
                 'client',
                 fn($q) => $q->where('id', $clientId)
             ))
+            ->latest()
             ->get();
 
         $data = compact('allProjects');
@@ -60,7 +61,7 @@ class ProjectController extends Controller
             return redirect()->route('projects.index');
         }
 
-        $tickets = Ticket::where('project_id', $id)->with(['project.client', 'assignee'])->get();
+        $tickets = Ticket::where('project_id', $id)->with(['project.client', 'assignee'])->latest()->get();
         $budgetPercent = $project->total_h > 0 ? ($project->budget_h / $project->total_h * 100) : 0;
         $teamMembers = $project->getTeam();
 
@@ -92,7 +93,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         if (auth()->user()->type === 'client') {
-            return redirect()->route('projects.index');
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
         $validated = $request->validate([
@@ -111,10 +112,35 @@ class ProjectController extends Controller
         $project = Project::create($validated);
 
         if (!empty($validated['team'])) {
-            $project->team()->sync($validated['team']);
+            $project->users()->sync($validated['team']);
         }
 
-        return redirect()->route('projects.show', $project->id);
+        $project->load(['client', 'owner']);
+
+        return response()->json([
+            'message' => 'Projet créé avec succès.',
+            'project' => [
+                'id' => $project->id,
+                'name' => $project->name,
+                'progress' => $project->progress ?? 0,
+                'progress_color' => $project->getProgressClassAttribute(),
+                'status_label' => $project->status_label,
+                'status_class' => $project->status_class,
+                'show_url' => route('projects.show', $project->id),
+                'created_at' => $project->created_at->format('M y'),
+                'client' => $project->client ? [
+                    'name' => $project->client->name,
+                    'company' => $project->client->company,
+                    'initials' => $project->client->getInitials(),
+                    'avatar_color' => $project->client->avatar_color,
+                ] : null,
+                'owner' => $project->owner ? [
+                    'full_name' => $project->owner->getFullName(),
+                    'initials' => $project->owner->getInitials(),
+                    'avatar_color' => $project->owner->avatar_color,
+                ] : null,
+            ],
+        ], 201);
     }
 
     public function update(Request $request, $id)

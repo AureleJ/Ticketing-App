@@ -13,7 +13,7 @@
                 </button>
             </div>
 
-            <form id="client-form" method="POST" action="{{ route('clients.store') }}">
+            <form id="client-form">
                 @csrf
                 <div class="popup-body">
                     <div class="input-group mb-md">

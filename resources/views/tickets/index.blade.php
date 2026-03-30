@@ -14,7 +14,7 @@
                     </button>
                 </div>
 
-                <form id="ticket-form" method="POST" action="{{ route('tickets.store') }}">
+                <form id="ticket-form">
                     @csrf
                     <input type="hidden" name="back_route" value="tickets.index">
 
@@ -126,28 +126,24 @@
                 </thead>
                 <tbody>
                     @forelse ($tickets as $ticket)
-                        @php
-                            $client   = $ticket->project?->client;
-                            $assignee = $ticket->assignee;
-                        @endphp
                         <tr onclick="window.location='{{ route('tickets.show', $ticket->id) }}'" class="ticket-row">
                             <td class="font-mono text-muted">#{{ $ticket->id }}</td>
                             <td><div class="text-title line-text">{{ $ticket->title }}</div></td>
                             <td>
-                                @if ($client)
+                                @if ($ticket->project->client)
                                     <div class="flex-center-y gap-sm">
-                                        <div class="user-avatar small {{ $client->avatar_color }}">{{ $client->getInitials() }}</div>
-                                        <span class="text-sm line-text">{{ $client->company }}</span>
+                                        <div class="user-avatar small {{ $ticket->project->client->avatar_color }}">{{ $ticket->project->client->getInitials() }}</div>
+                                        <span class="text-sm line-text">{{ $ticket->project->client->company }}</span>
                                     </div>
                                 @else
                                     <span class="text-muted text-sm">—</span>
                                 @endif
                             </td>
                             <td>
-                                @if ($assignee)
+                                @if ($ticket->assignee)
                                     <div class="flex-center-y gap-sm">
-                                        <div class="user-avatar small {{ $assignee->getAvatarColor() }}">{{ $assignee->getInitials() }}</div>
-                                        <span class="text-sm line-text">{{ $assignee->getFullName() }}</span>
+                                        <div class="user-avatar small {{ $ticket->assignee->getAvatarColor() }}">{{ $ticket->assignee->getInitials() }}</div>
+                                        <span class="text-sm line-text">{{ $ticket->assignee->getFullName() }}</span>
                                     </div>
                                 @else
                                     <span class="text-muted text-sm">Non assigné</span>

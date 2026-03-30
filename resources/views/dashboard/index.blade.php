@@ -15,7 +15,7 @@
                     </button>
                 </div>
 
-                <form id="ticket-form" method="POST" action="{{ route('tickets.store') }}">
+                <form id="ticket-form">
                     @csrf
                     <input type="hidden" name="back_route" value="tickets.index">
 
@@ -107,7 +107,7 @@
                     </button>
                 </div>
 
-                <form id="project-form" method="POST" action="{{ route('projects.store') }}">
+                <form id="project-form">
                     @csrf
 
                     <div class="popup-body">
@@ -232,7 +232,7 @@
                     </button>
                 </div>
 
-                <form id="client-form" method="POST" action="{{ route('clients.store') }}">
+                <form id="client-form">
                     @csrf
                     <div class="popup-body">
                         <div class="input-group mb-md">
@@ -356,6 +356,7 @@
                         <th>Sujet</th>
                         <th>Client</th>
                         <th>Assigné à</th>
+                        <th>Créé</th>
                         <th>Statut</th>
                         <th>Type</th>
                         <th>Priorité</th>
@@ -366,28 +367,29 @@
                     @foreach ($tickets as $ticket)
                         <tr onclick="window.location='{{ route('tickets.show', $ticket->id) }}'" class="ticket-row">
                             <td class="font-mono text-muted">#{{ $ticket->id }}</td>
+                            <td><div class="text-title line-text">{{ $ticket->title }}</div></td>
                             <td>
-                                <div class="text-title line-text">{{ $ticket->title }}</div>
-                            </td>
-                            <td>
-                                <div class="flex-center-y gap-sm">
-                                    <div class="user-avatar small {{ $ticket->client->avatar_color ?? 'blue' }}">
-                                        {{ $ticket->client->getInitials() ?? 'CL' }}
+                                @if ($ticket->project->client)
+                                    <div class="flex-center-y gap-sm">
+                                        <div class="user-avatar small {{ $ticket->project->client->avatar_color }}">{{ $ticket->project->client->getInitials() }}</div>
+                                        <span class="text-sm line-text">{{ $ticket->project->client->company }}</span>
                                     </div>
-                                    <span class="text-sm line-text">{{ $ticket->client->company ?? 'Companie inconnu' }}</span>
-                                </div>
+                                @else
+                                    <span class="text-muted text-sm">—</span>
+                                @endif
                             </td>
                             <td>
-                                <div class="flex-center-y gap-sm">
-                                    <div class="user-avatar small {{ $ticket->assignee->getAvatarColor() ?? 'blue' }}">
-                                        {{ $ticket->assignee->getInitials() ?? 'NA' }}
+                                @if ($ticket->assignee)
+                                    <div class="flex-center-y gap-sm">
+                                        <div class="user-avatar small {{ $ticket->assignee->getAvatarColor() }}">{{ $ticket->assignee->getInitials() }}</div>
+                                        <span class="text-sm line-text">{{ $ticket->assignee->getFullName() }}</span>
                                     </div>
-                                    <span
-                                        class="text-sm line-text">{{ $ticket->assignee->getFullName() ?? 'Non assigne' }}</span>
-                                </div>
+                                @else
+                                    <span class="text-muted text-sm">Non assigné</span>
+                                @endif
                             </td>
-                            <td><span class="badge line-text {{ $ticket->status_class }}">{{ $ticket->status_label }}</span>
-                            </td>
+                            <td><span class="text-sm line-text">{{ $ticket->created_at->format('d/m/y') }}</span></td>
+                            <td><span class="badge line-text {{ $ticket->status_class }}">{{ $ticket->status_label }}</span></td>
                             <td><span class="badge line-text {{ $ticket->type_class }}">{{ $ticket->type_label }}</span></td>
                             <td class="font-bold text-sm {{ $ticket->priority_class }}">{{ $ticket->priority_label }}</td>
                             <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>

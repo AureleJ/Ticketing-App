@@ -64,12 +64,25 @@ class ClientController extends Controller
 
         $colors = ['blue', 'yellow', 'green', 'red', 'purple', 'cyan'];
 
-        Client::create([
+        $client = Client::create([
             ...$validated,
             'avatar_color' => $colors[array_rand($colors)],
         ]);
 
-        return redirect()->route('clients.index');
+        return response()->json([
+            'message' => 'Client créé avec succès.',
+            'client' => [
+                'id' => $client->id,
+                'company' => $client->company,
+                'name' => $client->name,
+                'email' => $client->email,
+                'initials' => $client->getInitials(),
+                'avatar_color' => $client->avatar_color,
+                'status_label' => $client->status_label,
+                'status_class' => $client->status_class,
+                'show_url' => route('clients.show', $client->id),
+            ],
+        ], 201);
     }
 
     public function update(Request $request, $id)

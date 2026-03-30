@@ -47,7 +47,6 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
-            'back_route' => ['required', 'string'],
             'title' => ['required', 'string', 'max:255'],
             'project_id' => ['required', 'exists:projects,id'],
             'assigned_id' => ['nullable', 'exists:users,id'],
@@ -56,12 +55,39 @@ class TicketController extends Controller
             'description' => ['nullable', 'string'],
         ]);
 
-        Ticket::create([
-            ...$validated,
-            'status' => 'open',
-        ]);
+        $ticket = Ticket::create([...$validated, 'status' => 'open']);
 
-        return redirect()->route($validated['back_route']);
+        $ticket->load(['project.client', 'assignee']);
+
+        return response()->json([
+            'message' => 'Ticket ajouté avec succès.',
+            'ticket' => [
+                'id' => $ticket->id,
+                'title' => $ticket->title,
+                'created_at' => $ticket->created_at,
+
+                'status_label' => $ticket->status_label,
+                'status_class' => $ticket->status_class,
+
+                'type_label' => $ticket->type_label,
+                'type_class' => $ticket->type_class,
+
+                'priority_label' => $ticket->priority_label,
+                'priority_class' => $ticket->priority_class,
+
+                'client' => $ticket->project?->client ? [
+                    'company' => $ticket->project->client->company,
+                    'initials' => $ticket->project->client->getInitials(),
+                    'avatar_color' => $ticket->project->client->avatar_color,
+                ] : null,
+
+                'assignee' => $ticket->assignee ? [
+                    'full_name' => $ticket->assignee->getFullName(),
+                    'initials' => $ticket->assignee->getInitials(),
+                    'avatar_color' => $ticket->assignee->getAvatarColor(),
+                ] : null,
+            ],
+        ], 201);
     }
 
     public function show($id)
