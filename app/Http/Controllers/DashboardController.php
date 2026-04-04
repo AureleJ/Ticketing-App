@@ -44,6 +44,12 @@ class DashboardController extends Controller
                 'allClients' => Client::all(),
                 'allUsers' => User::all(),
                 'members' => User::where('type', 'member')->get(),
+                'openTickets' => Ticket::where('status', 'open')->get(),
+                'pendingTickets' => Ticket::where('status', 'pending')->get(),
+                'inProgressTickets' => Ticket::where('status', 'in_progress')->get(),
+                'closedTickets' => Ticket::where('status', 'closed')->get(),
+                'urgentTickets' => Ticket::where('priority', 'high')->get(),
+                'totalTime' => Project::sum('total_h') . '/' . Project::sum('budget_h') . 'h',
             ];
         }
 
