@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientController;
 
 // Ticket
 Route::post('/tickets', [TicketController::class, 'store'])->name('api.tickets.store');
+Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('api.tickets.update');
 
 // Project
 Route::post('/projects', [ProjectController::class, 'store'])->name('api.projects.store');

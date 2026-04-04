@@ -14,10 +14,9 @@
                     </button>
                 </div>
 
-                <form id="ticket-form">
+                <form id="ticket-form" data-mode="create">
                     @csrf
                     <input type="hidden" name="back_route" value="tickets.index">
-
                     <div class="popup-body">
                         <div class="input-group mb-md">
                             <div class="input-group-label mb-xs">

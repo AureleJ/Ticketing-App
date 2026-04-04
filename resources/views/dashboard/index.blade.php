@@ -15,7 +15,7 @@
                     </button>
                 </div>
 
-                <form id="ticket-form">
+                <form id="ticket-form" data-mode="create">
                     @csrf
                     <input type="hidden" name="back_route" value="tickets.index">
 
@@ -300,43 +300,59 @@
         <div class="flex gap-md animate-item delay-1 dashboard-stack">
             <div class="flex gap-md w-full stats-stack">
                 <div class="flex-col gap-md w-full">
-                    <div class="stat-item glass-panel">
+                    <div class="stat-item glass-panel h-full">
                         <i class="ph ph-ticket stat-icon-bg"></i>
-                        <div class="stat-label">Tickets en cours</div>
-                        <div class="stat-number">10</div>
+                        <div class="stat-label">Tickets ouverts</div>
+                        <div class="stat-number">{{ $openTickets->count() }}</div>
                     </div>
-                    <div class="stat-item glass-panel">
+                    <div class="stat-item glass-panel h-full">
                         <i class="ph ph-check-circle stat-icon-bg"></i>
-                        <div class="stat-label">À Valider</div>
-                        <div class="stat-number text-warning">5</div>
+                        <div class="stat-label">Tickets en cours</div>
+                        <div class="stat-number text-info">{{ $inProgressTickets->count() }}</div>
                     </div>
                 </div>
 
                 <div class="flex-col gap-md w-full">
-                    <div class="stat-item glass-panel">
+                    <div class="stat-item glass-panel h-full">
+                        <i class="ph ph-fire stat-icon-bg"></i>
+                        <div class="stat-label">Ticket en attente</div>
+                        <div class="stat-number text-warning">{{ $pendingTickets->count() }}</div>
+                    </div>
+                    <div class="stat-item glass-panel h-full">
+                        <i class="ph ph-clock stat-icon-bg"></i>
+                        <div class="stat-label">Ticket fermés</div>
+                        <div class="stat-number">{{ $closedTickets->count() }}</div>
+                    </div>
+                </div>
+
+                <div class="flex-col gap-md w-full">
+                    <div class="stat-item glass-panel h-full">
                         <i class="ph ph-fire stat-icon-bg"></i>
                         <div class="stat-label">Urgents</div>
-                        <div class="stat-number text-danger">3</div>
+                        <div class="stat-number text-danger">{{ $urgentTickets->count() }}</div>
                     </div>
-                    <div class="stat-item glass-panel">
+                    <div class="stat-item glass-panel h-full">
                         <i class="ph ph-clock stat-icon-bg"></i>
-                        <div class="stat-label">Temps total</div>
-                        <div class="stat-number">40h</div>
+                        <div class="stat-label">Temps projets</div>
+                        <div class="stat-number">{{ $totalTime }}</div>
                     </div>
                 </div>
             </div>
 
-            <div class="pannel glass-panel w-full">
+            <div class="pannel glass-panel">
                 <h3 class="text-lg mb-md">Actions Rapides</h3>
-                <div class="stats-grid">
-                    <button class="btn btn-secondary w-full" onclick="togglePopup('ticket-popup')">
-                        <i class="ph-bold ph-plus-circle text-info"></i>Nouveau Ticket
+                <div class="flex-col gap-sm">
+                    <button class="btn btn-secondary w-full line-text" onclick="togglePopup('ticket-popup')">
+                        <i class="ph-bold ph-plus-circle text-info"></i>
+                        Nouveau Ticket
                     </button>
-                    <button class="btn btn-secondary w-full" onclick="togglePopup('project-popup')">
-                        <i class="ph-bold ph-folder-plus text-info"></i>Nouveau Projet
+                    <button class="btn btn-secondary w-full line-text" onclick="togglePopup('project-popup')">
+                        <i class="ph-bold ph-folder-plus text-info"></i>
+                        Nouveau Projet
                     </button>
-                    <button class="btn btn-secondary w-full" onclick="togglePopup('client-popup')">
-                        <i class="ph-bold ph-user-plus text-info"></i>Nouveau Client
+                    <button class="btn btn-secondary w-full line-text" onclick="togglePopup('client-popup')">
+                        <i class="ph-bold ph-user-plus text-info"></i>
+                        Nouveau Client
                     </button>
                 </div>
             </div>
@@ -367,11 +383,14 @@
                     @foreach ($tickets as $ticket)
                         <tr onclick="window.location='{{ route('tickets.show', $ticket->id) }}'" class="ticket-row">
                             <td class="font-mono text-muted">#{{ $ticket->id }}</td>
-                            <td><div class="text-title line-text">{{ $ticket->title }}</div></td>
+                            <td>
+                                <div class="text-title line-text">{{ $ticket->title }}</div>
+                            </td>
                             <td>
                                 @if ($ticket->project->client)
                                     <div class="flex-center-y gap-sm">
-                                        <div class="user-avatar small {{ $ticket->project->client->avatar_color }}">{{ $ticket->project->client->getInitials() }}</div>
+                                        <div class="user-avatar small {{ $ticket->project->client->avatar_color }}">
+                                            {{ $ticket->project->client->getInitials() }}</div>
                                         <span class="text-sm line-text">{{ $ticket->project->client->company }}</span>
                                     </div>
                                 @else
@@ -381,7 +400,8 @@
                             <td>
                                 @if ($ticket->assignee)
                                     <div class="flex-center-y gap-sm">
-                                        <div class="user-avatar small {{ $ticket->assignee->getAvatarColor() }}">{{ $ticket->assignee->getInitials() }}</div>
+                                        <div class="user-avatar small {{ $ticket->assignee->getAvatarColor() }}">
+                                            {{ $ticket->assignee->getInitials() }}</div>
                                         <span class="text-sm line-text">{{ $ticket->assignee->getFullName() }}</span>
                                     </div>
                                 @else
@@ -389,7 +409,8 @@
                                 @endif
                             </td>
                             <td><span class="text-sm line-text">{{ $ticket->created_at->format('d/m/y') }}</span></td>
-                            <td><span class="badge line-text {{ $ticket->status_class }}">{{ $ticket->status_label }}</span></td>
+                            <td><span class="badge line-text {{ $ticket->status_class }}">{{ $ticket->status_label }}</span>
+                            </td>
                             <td><span class="badge line-text {{ $ticket->type_class }}">{{ $ticket->type_label }}</span></td>
                             <td class="font-bold text-sm {{ $ticket->priority_class }}">{{ $ticket->priority_label }}</td>
                             <td class="text-right"><i class="ph-bold ph-caret-right text-muted"></i></td>
@@ -467,20 +488,17 @@
                             <div>
                                 <h3 class="text-lg font-bold">{{ $client->company }}</h3>
                             </div>
-                            <div class="ml-auto"><span class="badge badge-active">{{ $client->status }}</span>
+                            <div class="ml-auto">
+                                <span class="badge {{ $client->status_class }}">{{ $client->status_label }}</span>
                             </div>
                         </div>
                         <div class="client-body">
-                            <div class="contact-row"><i class="ph-bold ph-user"></i>
-                                <span>{{ $client->name }}</span>
-                            </div>
-                            <div class="contact-row"><i class="ph-bold ph-envelope-simple"></i>
-                                <span>{{ $client->email }}</span>
-                            </div>
+                            <div class="contact-row"><i class="ph-bold ph-user"></i> <span>{{ $client->name }}</span></div>
+                            <div class="contact-row"><i class="ph-bold ph-envelope-simple"></i> <span>{{ $client->email }}</span></div>
                         </div>
                         <div class="client-footer">
-                            <div class="client-stat"><span>10</span> Projets</div>
-                            <div class="client-stat"><span>5</span> Tickets</div>
+                            <div class="client-stat"><span>{{ $client->projects->count() }}</span> Projets</div>
+                            <div class="client-stat"><span>{{ $client->projects->flatMap->tickets->count() }}</span> Tickets</div>
                             <div class="btn-icon"><i class="ph-bold ph-caret-right"></i></div>
                         </div>
                     </a>

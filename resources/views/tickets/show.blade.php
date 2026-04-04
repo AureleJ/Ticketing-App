@@ -4,22 +4,19 @@
 
 @if ($canManageTicket)
     @section('popups')
-        <div class="popup-overlay hidden" id="edit-ticket-popup">
+        <div class="popup-overlay hidden" id="ticket-popup">
             <div class="glass-panel popup-card">
 
                 <div class="popup-header">
                     <h3 class="text-lg font-semibold">Modifier le ticket</h3>
-                    <button type="button" class="btn-icon" onclick="togglePopup('edit-ticket-popup')">
+                    <button type="button" class="btn-icon" onclick="togglePopup('ticket-popup')">
                         <i class="ph-bold ph-x"></i>
                     </button>
                 </div>
 
-                <form method="POST" action="{{ route('tickets.update', $ticket->id) }}">
+                <form id="ticket-form" data-mode="edit" data-ticket-id="{{ $ticket->id }}">
                     @csrf
-                    @method('PUT')
-
                     <div class="popup-body">
-
                         <div class="input-group mb-md">
                             <div class="input-group-label mb-xs">
                                 <i class="ph ph-text-t"></i> Sujet du ticket
@@ -104,7 +101,7 @@
                     </div>
 
                     <div class="popup-footer">
-                        <button type="button" class="btn btn-secondary" onclick="togglePopup('edit-ticket-popup')">
+                        <button type="button" class="btn btn-secondary" onclick="togglePopup('ticket-popup')">
                             Annuler
                         </button>
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
@@ -124,7 +121,7 @@
 
         @if ($canManageTicket)
             <div class="flex gap-sm">
-                <button class="btn btn-secondary" onclick="togglePopup('edit-ticket-popup')">
+                <button class="btn btn-secondary" onclick="togglePopup('ticket-popup')">
                     <i class="ph ph-pencil-simple"></i><span>Modifier</span>
                 </button>
 
@@ -152,13 +149,13 @@
     <div class="glass-panel pannel animate-item delay-1">
         <div class="flex-col gap-md">
             <div class="flex gap-sm">
-                <span class="badge {{ $ticket->status_class }}">{{ $ticket->status_label }}</span>
-                <span class="badge {{ $ticket->type_class }}">{{ $ticket->type_label }}</span>
-                <span class="text-muted text-sm flex-center-y ml-auto">
-                    Ouvert le {{ $ticket->created_at->format('d/m/Y H:i') }}
+                <span id="status-badge" class="badge {{ $ticket->status_class }}">{{ $ticket->status_label }}</span>
+                <span id="label-badge" class="badge {{ $ticket->type_class }}">{{ $ticket->type_label }}</span>
+                <span id="date" class="text-muted text-sm flex-center-y ml-auto">
+                    {{ $date }}
                 </span>
             </div>
-            <h1 class="text-xl font-bold">{{ $ticket->title }}</h1>
+            <h1 id="title" class="text-xl font-bold">{{ $ticket->title }}</h1>
         </div>
     </div>
 
@@ -166,7 +163,7 @@
         <div class="flex-col gap-lg">
             <div class="glass-panel pannel">
                 <h3 class="text-sm font-bold uppercase mb-md">Description</h3>
-                <p class="text-muted" style="line-height: 1.6;">{{ $ticket->description }}</p>
+                <p id="description" class="text-muted" style="line-height: 1.6;">{{ $ticket->description }}</p>
             </div>
         </div>
 
@@ -177,24 +174,24 @@
                     <li class="flex-center-y gap-xs">
                         <span class="text-muted">Client</span>
                         <div class="flex-center-y gap-xs font-bold">
-                            <div class="user-avatar small {{ $client->avatar_color }}">{{ $client->getInitials() }}</div>
-                            {{ $client->company }}
+                            <div id="client-avatar" class="user-avatar small {{ $client->avatar_color }}">{{ $client->getInitials() }}</div>
+                            <span id="client-company">{{ $client->company }}</span>
                         </div>
                     </li>
                     <li class="flex-center-y gap-xs">
                         <span class="text-muted">Projet</span>
-                        <span>{{ $project->name }}</span>
+                        <span id="project-name">{{ $project->name }}</span>
                     </li>
                     <li class="flex-center-y gap-xs">
                         <span class="text-muted">Priorité</span>
-                        <span class="font-bold {{ $ticket->priority_class }}">{{ $ticket->priority_label }}</span>
+                        <span id="priority" class="font-bold {{ $ticket->priority_class }}">{{ $ticket->priority_label }}</span>
                     </li>
                     <li class="flex-center-y gap-xs">
                         <span class="text-muted">Assigné à</span>
                         @if ($assigned)
                             <div class="flex-center-y gap-xs">
-                                <div class="user-avatar small {{ $assigned->avatar_color }}">{{ $assigned->getInitials() }}</div>
-                                {{ $assigned->getFullName() }}
+                                <div id="assigned-avatar" class="user-avatar small {{ $assigned->avatar_color }}">{{ $assigned->getInitials() }}</div>
+                                <span id="assigned-name">{{ $assigned->getFullName() }}</span>
                             </div>
                         @else
                             <span class="text-muted">Non assigné</span>

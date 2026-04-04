@@ -16,7 +16,6 @@
 
                 <form id="project-form">
                     @csrf
-
                     <div class="popup-body">
 
                         <div class="input-group mb-md">

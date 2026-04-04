@@ -99,12 +99,15 @@ class TicketController extends Controller
             return redirect()->route('tickets.index');
         }
 
+        $date = $ticket->updated_at->ne($ticket->created_at) ? 'Modifié le ' . $ticket->updated_at->format('d/m/Y H:i') : 'Ouvert le ' . $ticket->created_at->format('d/m/Y H:i');
+
         $data = [
             'ticket' => $ticket,
             'project' => $ticket->project,
             'client' => $ticket->project->client,
             'assigned' => $ticket->assignee,
             'canManageTicket' => $this->canManage($ticket),
+            'date' => $date,
         ];
 
         if ($user->type !== 'client') {
@@ -137,7 +140,39 @@ class TicketController extends Controller
 
         $ticket->update($validated);
 
-        return redirect()->route('tickets.show', $ticket->id);
+        $ticket->load(['project.client', 'assignee']);
+
+        return response()->json([
+            'message' => 'Ticket mis à jour avec succès.',
+            'ticket' => [
+                'id' => $ticket->id,
+                'title' => $ticket->title,
+                'description' => $ticket->description,
+                'created_at' => $ticket->created_at,
+
+                'status_label' => $ticket->status_label,
+                'status_class' => $ticket->status_class,
+
+                'type_label' => $ticket->type_label,
+                'type_class' => $ticket->type_class,
+                'priority_label' => $ticket->priority_label,
+                'priority_class' => $ticket->priority_class,
+
+                'updated_at' => $ticket->updated_at,
+
+                'client' => $ticket->project?->client ? [
+                    'company' => $ticket->project->client->company,
+                    'initials' => $ticket->project->client->getInitials(),
+                    'avatar_color' => $ticket->project->client->avatar_color,
+                ] : null,
+
+                'assignee' => $ticket->assignee ? [
+                    'full_name' => $ticket->assignee->getFullName(),
+                    'initials' => $ticket->assignee->getInitials(),
+                    'avatar_color' => $ticket->assignee->getAvatarColor(),
+                ] : null,
+            ],
+        ], 200);
     }
 
     public function destroy(Request $request, $id)
