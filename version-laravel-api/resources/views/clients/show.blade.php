@@ -144,7 +144,7 @@
                         </div>
                         <div class="progress-track">
                             <div class="progress-fill"
-                                style="width: {{ $project->progress }}%; background: {{ $project->progress_color }};"></div>
+                                style="width: {{ $project->progress }}%; background: {{ $project->getProgressClassAttribute() }};"></div>
                         </div>
                         <div class="card-footer">
                             <div class="user-infos">
