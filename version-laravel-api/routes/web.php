@@ -32,22 +32,22 @@ Route::middleware('auth')->group(function () {
 
     // Tickets
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    // Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
     Route::get('/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
     Route::delete('/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
-    Route::put('/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
+    // Route::put('/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
     Route::put('/tickets/{id}/close', [TicketController::class, 'close'])->name('tickets.close');
 
     // Projects
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    // Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
     Route::put('/projects/{id}', [ProjectController::class, 'update'])->name('projects.update');
 
     // Clients
     Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
-    Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+    // Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
     Route::get('/clients/{id}', [ClientController::class, 'show'])->name('clients.show');
     Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->name('clients.destroy');
     Route::put('/clients/{id}', [ClientController::class, 'update'])->name('clients.update');

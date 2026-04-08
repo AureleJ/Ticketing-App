@@ -65,7 +65,7 @@ function togglePopup(id) {
 async function addTicket(formData) {
     const ticketForm = document.getElementById("ticket-form");
     
-    const response = await fetch("/tickets", {
+    const response = await fetch("/api/tickets", {
         method: "POST",
         headers: {
             Accept: "application/json",
@@ -90,7 +90,7 @@ async function addTicket(formData) {
 async function editTicket(ticketId, formData) {
     const ticketForm = document.getElementById("ticket-form");
     
-    const response = await fetch("/tickets/" + ticketId, {
+    const response = await fetch("/api/tickets/" + ticketId, {
         method: "PUT",
         headers: {
             Accept: "application/json",
@@ -243,7 +243,7 @@ function initTicketForm() {
 async function addProject(formData) {
     const projectForm = document.getElementById("project-form");
     
-    const response = await fetch("/projects", {
+    const response = await fetch("/api/projects", {
         method: "POST",
         headers: {
             Accept: "application/json",
@@ -376,7 +376,7 @@ function initProjectForm() {
 async function addClient(formData) {
     const clientForm = document.getElementById("client-form");
     
-    const response = await fetch("/clients", {
+    const response = await fetch("/api/clients", {
         method: "POST",
         headers: {
             Accept: "application/json",
