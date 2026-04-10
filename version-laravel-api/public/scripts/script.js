@@ -452,9 +452,124 @@ function initClientForm() {
     });
 }
 
+function initTicketFilters() {
+    const filterSearch = document.getElementById("filter-search");
+    const filterStatus = document.getElementById("filter-status");
+    const filterType = document.getElementById("filter-type");
+    const filterPriority = document.getElementById("filter-priority");
+    const filterAssigned = document.getElementById("filter-assigned");
+
+    if (filterSearch) filterSearch.addEventListener("input", filterTickets);
+    if (filterStatus) filterStatus.addEventListener("change", filterTickets);
+    if (filterType) filterType.addEventListener("change", filterTickets);
+    if (filterPriority) filterPriority.addEventListener("change", filterTickets);
+    if (filterAssigned) filterAssigned.addEventListener("change", filterTickets);
+}
+
 // Init
 document.addEventListener("DOMContentLoaded", function () {
     initTicketForm();
     initProjectForm();
     initClientForm();
+    initTicketFilters();
 });
+
+// --- Search et Filters ---
+function filterTickets() {
+    const searchTerm = document.getElementById("filter-search")?.value.toLowerCase() || "";
+    const statusFilter = document.getElementById("filter-status")?.value || "";
+    const typeFilter = document.getElementById("filter-type")?.value || "";
+    const priorityFilter = document.getElementById("filter-priority")?.value || "";
+    const assignedFilter = document.getElementById("filter-assigned")?.value || "";
+
+    const ticketTable = document.getElementById("ticket-table");
+    if (!ticketTable) return;
+
+    const rows = ticketTable.querySelectorAll("tbody tr");
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const title = row.querySelector("td:nth-child(2)")?.textContent.toLowerCase() || "";
+        const statusBadge = row.querySelector("td:nth-child(6)")?.textContent.trim() || "";
+        const typeBadge = row.querySelector("td:nth-child(7)")?.textContent.trim() || "";
+        console.log(typeBadge);
+        const priorityText = row.querySelector("td:nth-child(8)")?.textContent.trim() || "";
+        const assignedName = row.querySelector("td:nth-child(4)")?.textContent.trim() || "";
+
+        let matches = true;
+
+        if (searchTerm && !title.includes(searchTerm)) {
+            matches = false;
+        }
+
+        if (statusFilter) {
+            const statusMapping = {
+                "open": "Ouvert",
+                "in_progress": "En cours",
+                "pending": "En attente",
+                "closed": "Terminé"
+            };
+            const expectedStatus = statusMapping[statusFilter];
+            if (statusBadge !== expectedStatus) {
+                matches = false;
+            }
+        }
+
+        if (typeFilter) {
+            const typeMapping = {
+                "non_facturable": "non facturable",
+                "facturable": "facturable"
+            };
+            const expectedLabel = typeMapping[typeFilter];
+            if (typeBadge.toLowerCase() !== expectedLabel.toLowerCase()) {
+                matches = false;
+            }
+        }
+
+        if (priorityFilter) {
+            const priorityMapping = {
+                "low": "Basse",
+                "medium": "Moyenne",
+                "high": "Haute"
+            };
+            const expectedPriority = priorityMapping[priorityFilter];
+            if (priorityText !== expectedPriority) {
+                matches = false;
+            }
+        }
+
+        if (assignedFilter && !assignedName.includes(assignedFilter)) {
+            matches = false;
+        }
+
+        row.style.display = matches ? "" : "none";
+        if (matches) visibleCount++;
+    });
+
+    let emptyRow = ticketTable.querySelector("tbody tr[data-empty-message]");
+    if (visibleCount === 0 && !emptyRow) {
+        const tbody = ticketTable.querySelector("tbody");
+        const row = document.createElement("tr");
+        row.setAttribute("data-empty-message", "true");
+        row.innerHTML = '<td colspan="9" class="text-center text-muted p-md">Aucun ticket ne correspond aux filtres.</td>';
+        tbody.appendChild(row);
+    } else if (visibleCount > 0 && emptyRow) {
+        emptyRow.remove();
+    }
+}
+
+function clearFilters() {
+    const filterSearch = document.getElementById("filter-search");
+    const filterStatus = document.getElementById("filter-status");
+    const filterType = document.getElementById("filter-type");
+    const filterPriority = document.getElementById("filter-priority");
+    const filterAssigned = document.getElementById("filter-assigned");
+
+    if (filterSearch) filterSearch.value = "";
+    if (filterStatus) filterStatus.value = "";
+    if (filterType) filterType.value = "";
+    if (filterPriority) filterPriority.value = "";
+    if (filterAssigned) filterAssigned.value = "";
+    
+    filterTickets();
+}

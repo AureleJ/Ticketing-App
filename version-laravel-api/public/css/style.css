@@ -765,8 +765,6 @@ textarea {
 
 .filters-bar {
     display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
     align-items: center;
 }
 
@@ -1339,10 +1337,6 @@ textarea {
     .filters-bar {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .filters-bar .input-group {
-        width: 100%;
     }
 
     .btn-floating {

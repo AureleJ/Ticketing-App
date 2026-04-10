@@ -58,7 +58,6 @@
                                     <option value="low">Basse</option>
                                     <option value="medium" selected>Moyenne</option>
                                     <option value="high">Haute</option>
-                                    <option value="urgent">Urgent</option>
                                 </select>
                             </div>
 
@@ -105,6 +104,54 @@
 @section('content')
     <div class="top-bar glass-panel animate-item">
         <h2>Tickets</h2>
+    </div>
+
+    <div class="filters-bar pannel glass-panel animate-item delay-1 flex gap-xs" id="filters-bar">
+        <div class="input-group" style="min-width: 200px;">
+            <input type="text" id="filter-search" placeholder="Rechercher par sujet..." class="w-full">
+        </div>
+
+        <div class="input-group" style="min-width: 150px;">
+            <select id="filter-status">
+                <option value="">Tous les statuts</option>
+                <option value="open">Ouvert</option>
+                <option value="in_progress">En cours</option>
+                <option value="pending">En attente</option>
+                <option value="closed">Fermé</option>
+            </select>
+        </div>
+
+        <div class="input-group" style="min-width: 150px;">
+            <select id="filter-type">
+                <option value="">Tous les types</option>
+                <option value="non_facturable">Non facturable</option>
+                <option value="facturable">Facturable</option>
+            </select>
+        </div>
+
+        <div class="input-group" style="min-width: 150px;">
+            <select id="filter-priority">
+                <option value="">Toutes les priorités</option>
+                <option value="low">Basse</option>
+                <option value="medium">Moyenne</option>
+                <option value="high">Haute</option>
+            </select>
+        </div>
+
+        @if (auth()->user()->type !== 'client')
+            <div class="input-group" style="min-width: 150px;">
+                <select id="filter-assigned">
+                    <option value="">Tous les assignés</option>
+                    @foreach ($members as $m)
+                        <option value="{{ $m->getFullName() }}">{{ $m->getFullName() }}</option>
+                    @endforeach
+                </select>
+            </div>
+        @endif
+
+        <button class="btn btn-secondary" onclick="clearFilters()" style="white-space: nowrap;">
+            Réinitialiser
+        </button>
     </div>
 
     <div class="pannel glass-panel animate-item delay-2">
